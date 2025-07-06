@@ -24,7 +24,7 @@ public class Core : Game
     /// <summary>
     /// Gets the graphics device used to create graphical resources and perform primitive rendering.
     /// </summary>
-    public static new GraphicsDevice GraphicsDevice { get; private set; }
+    // public static new GraphicsDevice GraphicsDevice { get; private set; }
 
     /// <summary>
     /// Gets the sprite batch used for all 2D rendering.
@@ -95,7 +95,9 @@ public class Core : Game
 
         // Set the core's graphics device to a reference of the base Game's
         // graphics device.
-        GraphicsDevice = base.GraphicsDevice;
+        // GraphicsDevice = base.GraphicsDevice;
+
+        Console.WriteLine("CORE INIT");
 
         // Create the sprite batch instance.
         SpriteBatch = new SpriteBatch(GraphicsDevice);

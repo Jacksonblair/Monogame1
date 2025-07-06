@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Jackson\\Monogame\\monogame\\DungeonSlime\\Library1\\Library1.csproj": {}
+    "c:\\Users\\Jackson\\Monogame\\monogame\\DungeonSlime\\Library1\\Library1.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Jackson\\Monogame\\monogame\\DungeonSlime\\Library1\\Library1.csproj": {
+    "c:\\Users\\Jackson\\Monogame\\monogame\\DungeonSlime\\Library1\\Library1.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Jackson\\Monogame\\monogame\\DungeonSlime\\Library1\\Library1.csproj",
+        "projectUniqueName": "c:\\Users\\Jackson\\Monogame\\monogame\\DungeonSlime\\Library1\\Library1.csproj",
         "projectName": "Library1",
-        "projectPath": "C:\\Users\\Jackson\\Monogame\\monogame\\DungeonSlime\\Library1\\Library1.csproj",
+        "projectPath": "c:\\Users\\Jackson\\Monogame\\monogame\\DungeonSlime\\Library1\\Library1.csproj",
         "packagesPath": "C:\\Users\\Jackson\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Jackson\\Monogame\\monogame\\DungeonSlime\\Library1\\obj\\",
+        "outputPath": "c:\\Users\\Jackson\\Monogame\\monogame\\DungeonSlime\\Library1\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Jackson\\AppData\\Roaming\\NuGet\\NuGet.Config",
