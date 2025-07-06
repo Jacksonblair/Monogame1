@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SourceFileCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Profile>Reach</Profile>
+  <Platform>DesktopGL</Platform>
+  <Config />
+  <SourceFiles>
+    <File>c:/Users/Jackson/Monogame/monogame/DungeonSlime/DungeonSlime/Content/../Tiled/Tilemap1.tmx</File>
+    <File>c:/Users/Jackson/Monogame/monogame/DungeonSlime/DungeonSlime/Content/images/atlas.png</File>
+    <File>c:/Users/Jackson/Monogame/monogame/DungeonSlime/DungeonSlime/Content/images/logo.png</File>
+  </SourceFiles>
+  <DestFiles>
+    <File>images/Tilemap1.tmx</File>
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+  </DestFiles>
+</SourceFileCollection>
