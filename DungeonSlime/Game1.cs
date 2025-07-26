@@ -1,13 +1,19 @@
 ﻿using System;
+using LDtk;
+// Optional
+using LDtk.Renderer;
+using LDtkTypes;
 using Library1;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using MonoGame.Extended.Tiled;
-using MonoGame.Extended.Tiled.Renderers;
 using MonoGameLibrary;
 using MonoGameLibrary.Graphics;
+
+
 using MonoGameLibrary.Input;
+using MonoGame.Extended;
+using MonoGame.Extended.ViewportAdapters;
 
 namespace DungeonSlime;
 
@@ -37,9 +43,13 @@ public class Game1 : Core
     // Defines the bounds of the room that the slime and bat are contained within.
     // private Rectangle _roomBounds;
 
-    // TILEMAP VARS
-    TiledMap _tiledMap;
-    TiledMapRenderer _tiledMapRenderer;
+    LDtkFile LDtkFile;
+    LDtkWorld World;
+    ExampleRenderer Renderer;
+
+    // Extended camera
+    OrthographicCamera _camera;
+
 
     // 1. Core systems in constructor
     public Game1()
@@ -52,7 +62,22 @@ public class Game1 : Core
 
         base.Initialize(); // Should never be removed,  as this is where the graphics device is initialized for the target platform.
 
-        Rectangle screenBounds = GraphicsDevice.PresentationParameters.Bounds;
+        LDtkFile = LDtkFile.FromFile(
+            "C:/Users/Jackson/AppData/Local/Programs/ldtk/extraFiles/samples/Typical_TopDown_example_edited.ldtk"
+        );
+        World = LDtkFile.LoadWorld(Worlds.World.Iid);
+        Renderer = new ExampleRenderer(SpriteBatch);
+
+        foreach (LDtkLevel level in World.Levels)
+        {
+            Renderer.PrerenderLevel(level);
+        }
+
+
+        var viewportAdapter = new BoxingViewportAdapter(Window, GraphicsDevice, 800, 480);
+        _camera = new OrthographicCamera(viewportAdapter);
+
+        // Rectangle screenBounds = GraphicsDevice.PresentationParameters.Bounds;
 
         // _roomBounds = new Rectangle(
         //     (int)_tilemap.TileWidth,
@@ -93,19 +118,6 @@ public class Game1 : Core
         // Create the tilemap from the XML configuration file.
         // _tilemap = Tilemap.FromFile(Content, "images/tilemap-definition.xml");
         // _tilemap.Scale = new Vector2(4.0f, 4.0f);
-
-        _tiledMap = Content.Load<TiledMap>("tilemaps/Tilemap1");
-        if (_tiledMap == null)
-        {
-            throw new Exception("Failed to load Tilemap1.tmx as TiledMap");
-        }
-
-        if (GraphicsDevice == null)
-        {
-            throw new Exception("Graphics device is null");
-        }
-
-        _tiledMapRenderer = new TiledMapRenderer(GraphicsDevice, _tiledMap);
     }
 
     protected override void Update(GameTime gameTime)
@@ -121,9 +133,6 @@ public class Game1 : Core
 
         // Update the bat animated sprite.
         // _bat.Update(gameTime);
-
-        // Update the tiledMap renderer
-        _tiledMapRenderer.Update(gameTime);
 
         // Check for keyboard input and handle it.
         CheckKeyboardInput();
@@ -336,21 +345,36 @@ public class Game1 : Core
     {
         GraphicsDevice.Clear(Color.CornflowerBlue);
 
-        // Begin the sprite batch to prepare for rendering.
-        SpriteBatch.Begin(samplerState: SamplerState.PointClamp);
+        // // Begin the sprite batch to prepare for rendering.
+        // SpriteBatch.Begin(samplerState: SamplerState.PointClamp);
 
-        // Draw the tilemap.
-        // _tilemap.Draw(SpriteBatch);
+        // // Draw the tilemap.
+        // // _tilemap.Draw(SpriteBatch);
 
-        // Draw the slime sprite.
-        // _slime.Draw(SpriteBatch, _slimePosition);
+        // // Draw the slime sprite.
+        // // _slime.Draw(SpriteBatch, _slimePosition);
 
-        // Draw the bat sprite 10px to the right of the slime.
-        // _bat.Draw(SpriteBatch, _batPosition);
+        // // Draw the bat sprite 10px to the right of the slime.
+        // // _bat.Draw(SpriteBatch, _batPosition);
 
-        _tiledMapRenderer.Draw();
+        // // Always end the sprite batch when finished.
+        // SpriteBatch.End();
 
-        // Always end the sprite batch when finished.
+        // GraphicsDevice.Clear(World.BgColor);
+
+        var transformMatrix = _camera.GetViewMatrix();
+        SpriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix:);
+
+        // _spriteBatch.Begin(transformMatrix: transformMatrix);
+        SpriteBatch.DrawRectangle(new RectangleF(250,250,50,50), Color.Black, 1f);
+        // _spriteBatch.End();
+
+        {
+            foreach (LDtkLevel level in World.Levels)
+            {
+                Renderer.RenderPrerenderedLevel(level);
+            }
+        }
         SpriteBatch.End();
 
         base.Draw(gameTime);

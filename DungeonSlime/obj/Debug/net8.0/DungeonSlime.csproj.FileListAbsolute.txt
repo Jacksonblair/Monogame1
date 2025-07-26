@@ -40,3 +40,4 @@ c:\Users\Jackson\Monogame\monogame\DungeonSlime\DungeonSlime\obj\Debug\net8.0\re
 c:\Users\Jackson\Monogame\monogame\DungeonSlime\DungeonSlime\obj\Debug\net8.0\DungeonSlime.pdb
 c:\Users\Jackson\Monogame\monogame\DungeonSlime\DungeonSlime\obj\Debug\net8.0\DungeonSlime.genruntimeconfig.cache
 c:\Users\Jackson\Monogame\monogame\DungeonSlime\DungeonSlime\obj\Debug\net8.0\ref\DungeonSlime.dll
+c:\Users\Jackson\Monogame\monogame\DungeonSlime\DungeonSlime\bin\Debug\net8.0\LDtkMonogame.dll
