@@ -38,13 +38,27 @@
 /processorParam:TextureFormat=Color
 /build:images/logo.png
 
-#begin tilemaps/Tilemap1.tmx
-/importer:TiledMapImporter
-/processor:TiledMapProcessor
-/build:tilemaps/Tilemap1.tmx
+#begin images/noBKG_KnightIdle_strip.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:images/noBKG_KnightIdle_strip.png
 
-#begin tilesets/Tileset1.tsx
-/importer:TiledMapTilesetImporter
-/processor:TiledMapTilesetProcessor
-/build:tilesets/Tileset1.tsx
+#begin images/noBKG_KnightRun_strip.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:images/noBKG_KnightRun_strip.png
 

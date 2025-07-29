@@ -8,24 +8,25 @@ using Microsoft.Xna.Framework;
 
 public partial class Player : ILDtkEntity
 {
-    public static Player Default() => new()
-    {
-        Identifier = "Player",
-        Uid = 59,
-        Size = new Vector2(16f, 16f),
-        Pivot = new Vector2(0.5f, 0.5f),
-        Tile = new TilesetRectangle()
+    public static Player Default() =>
+        new()
         {
-            X = 0,
-            Y = 240,
-            W = 16,
-            H = 16
-        },
-        SmartColor = new Color(3, 203, 124, 255),
+            Identifier = "Player",
+            Uid = 59,
+            Size = new Vector2(16f, 16f),
+            Pivot = new Vector2(0.5f, 0.5f),
+            Tile = new TilesetRectangle()
+            {
+                X = 0,
+                Y = 0,
+                W = 144,
+                H = 32
+            },
+            SmartColor = new Color(3, 203, 124, 255),
 
-        life = 100,
-        ammo = 10,
-    };
+            life = 100,
+            ammo = 10,
+        };
 
     public string Identifier { get; set; }
     public System.Guid Iid { get; set; }

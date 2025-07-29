@@ -41,3 +41,5 @@ c:\Users\Jackson\Monogame\monogame\DungeonSlime\DungeonSlime\obj\Debug\net8.0\Du
 c:\Users\Jackson\Monogame\monogame\DungeonSlime\DungeonSlime\obj\Debug\net8.0\DungeonSlime.genruntimeconfig.cache
 c:\Users\Jackson\Monogame\monogame\DungeonSlime\DungeonSlime\obj\Debug\net8.0\ref\DungeonSlime.dll
 c:\Users\Jackson\Monogame\monogame\DungeonSlime\DungeonSlime\bin\Debug\net8.0\LDtkMonogame.dll
+c:\Users\Jackson\Monogame\monogame\DungeonSlime\DungeonSlime\bin\Debug\net8.0\Content\images\noBKG_KnightIdle_strip.xnb
+c:\Users\Jackson\Monogame\monogame\DungeonSlime\DungeonSlime\bin\Debug\net8.0\Content\images\noBKG_KnightRun_strip.xnb

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using LDtk;
 // Optional
 using LDtk.Renderer;
@@ -7,13 +8,11 @@ using Library1;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using MonoGameLibrary;
-using MonoGameLibrary.Graphics;
-
-
-using MonoGameLibrary.Input;
 using MonoGame.Extended;
 using MonoGame.Extended.ViewportAdapters;
+using MonoGameLibrary;
+using MonoGameLibrary.Graphics;
+using MonoGameLibrary.Input;
 
 namespace DungeonSlime;
 
@@ -45,11 +44,12 @@ public class Game1 : Core
 
     LDtkFile LDtkFile;
     LDtkWorld World;
-    ExampleRenderer Renderer;
+    RendererOne Renderer;
+    List<Door> doors = new List<Door>();
+    PlayerEntity player;
 
     // Extended camera
     OrthographicCamera _camera;
-
 
     // 1. Core systems in constructor
     public Game1()
@@ -66,16 +66,18 @@ public class Game1 : Core
             "C:/Users/Jackson/AppData/Local/Programs/ldtk/extraFiles/samples/Typical_TopDown_example_edited.ldtk"
         );
         World = LDtkFile.LoadWorld(Worlds.World.Iid);
-        Renderer = new ExampleRenderer(SpriteBatch);
+        Renderer = new RendererOne(SpriteBatch);
 
         foreach (LDtkLevel level in World.Levels)
         {
             Renderer.PrerenderLevel(level);
         }
 
-
         var viewportAdapter = new BoxingViewportAdapter(Window, GraphicsDevice, 800, 480);
         _camera = new OrthographicCamera(viewportAdapter);
+
+        var playerData = World.GetEntity<Player>();
+        this.player = new PlayerEntity(playerData, Renderer, Content);
 
         // Rectangle screenBounds = GraphicsDevice.PresentationParameters.Bounds;
 
@@ -141,12 +143,12 @@ public class Game1 : Core
         CheckGamePadInput();
 
         // Create a bounding rectangle for the screen
-        Rectangle screenBounds = new Rectangle(
-            0,
-            0,
-            GraphicsDevice.PresentationParameters.BackBufferWidth,
-            GraphicsDevice.PresentationParameters.BackBufferHeight
-        );
+        // Rectangle screenBounds = new Rectangle(
+        //     0,
+        //     0,
+        //     GraphicsDevice.PresentationParameters.BackBufferWidth,
+        //     GraphicsDevice.PresentationParameters.BackBufferHeight
+        // );
 
         // Creating a bounding circle for the slime
         // Circle slimeBounds = new Circle(
@@ -186,7 +188,7 @@ public class Game1 : Core
         //     (int)(_bat.Width * 0.5f)
         // );
 
-        Vector2 normal = Vector2.Zero;
+        // Vector2 normal = Vector2.Zero;
 
         // Use distance based checks to determine if the bat is within the
         // bounds of the game screen, and if it is outside that screen edge,
@@ -237,18 +239,68 @@ public class Game1 : Core
         //     AssignRandomBatVelocity();
         // }
 
+        const float movementSpeed = 200;
+        _camera.Move(GetCameraMovementDirection() * movementSpeed * gameTime.GetElapsedSeconds());
+        AdjustCameraZoom();
+
+        player.Update(gameTime);
+
         base.Update(gameTime);
+    }
+
+    private Vector2 GetCameraMovementDirection()
+    {
+        var movementDirection = Vector2.Zero;
+        var state = Keyboard.GetState();
+        if (state.IsKeyDown(Keys.Down))
+        {
+            movementDirection += Vector2.UnitY;
+        }
+        if (state.IsKeyDown(Keys.Up))
+        {
+            movementDirection -= Vector2.UnitY;
+        }
+        if (state.IsKeyDown(Keys.Left))
+        {
+            movementDirection -= Vector2.UnitX;
+        }
+        if (state.IsKeyDown(Keys.Right))
+        {
+            movementDirection += Vector2.UnitX;
+        }
+        return movementDirection;
+    }
+
+    // Add this to the Game1.cs file
+    private void AdjustCameraZoom()
+    {
+        var state = Keyboard.GetState();
+        float zoomPerTick = 0.01f;
+        if (state.IsKeyDown(Keys.Z))
+        {
+            _camera.ZoomIn(zoomPerTick);
+        }
+        if (state.IsKeyDown(Keys.X))
+        {
+            _camera.ZoomOut(zoomPerTick);
+        }
+    }
+
+    private Vector2 GetMouseWorldPosition()
+    {
+        var mouseState = Mouse.GetState();
+        return _camera.ScreenToWorld(new Vector2(mouseState.X, mouseState.Y));
     }
 
     private void AssignRandomBatVelocity()
     {
         // Generate a random angle
-        float angle = (float)(Random.Shared.NextDouble() * Math.PI * 2);
+        // float angle = (float)(Random.Shared.NextDouble() * Math.PI * 2);
 
         // Convert angle to a direction vector
-        float x = (float)Math.Cos(angle);
-        float y = (float)Math.Sin(angle);
-        Vector2 direction = new Vector2(x, y);
+        // float x = (float)Math.Cos(angle);
+        // float y = (float)Math.Sin(angle);
+        // Vector2 direction = new Vector2(x, y);
 
         // Multiply the direction vector by the movement speed
         // _batVelocity = direction * MOVEMENT_SPEED;
@@ -363,10 +415,10 @@ public class Game1 : Core
         // GraphicsDevice.Clear(World.BgColor);
 
         var transformMatrix = _camera.GetViewMatrix();
-        SpriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix:);
+        SpriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: transformMatrix);
 
         // _spriteBatch.Begin(transformMatrix: transformMatrix);
-        SpriteBatch.DrawRectangle(new RectangleF(250,250,50,50), Color.Black, 1f);
+        // SpriteBatch.DrawRectangle(new RectangleF(250,250,50,50), Color.Black, 1f);
         // _spriteBatch.End();
 
         {
@@ -375,6 +427,9 @@ public class Game1 : Core
                 Renderer.RenderPrerenderedLevel(level);
             }
         }
+
+        player.Draw(gameTime);
+
         SpriteBatch.End();
 
         base.Draw(gameTime);

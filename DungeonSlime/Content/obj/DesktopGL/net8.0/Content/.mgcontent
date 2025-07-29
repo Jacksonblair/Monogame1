@@ -6,8 +6,8 @@
   <SourceFiles>
     <File>c:/Users/Jackson/Monogame/monogame/DungeonSlime/DungeonSlime/Content/images/atlas.png</File>
     <File>c:/Users/Jackson/Monogame/monogame/DungeonSlime/DungeonSlime/Content/images/logo.png</File>
-    <File>c:/Users/Jackson/Monogame/monogame/DungeonSlime/DungeonSlime/Content/tilemaps/Tilemap1.tmx</File>
-    <File>c:/Users/Jackson/Monogame/monogame/DungeonSlime/DungeonSlime/Content/tilesets/Tileset1.tsx</File>
+    <File>c:/Users/Jackson/Monogame/monogame/DungeonSlime/DungeonSlime/Content/images/noBKG_KnightIdle_strip.png</File>
+    <File>c:/Users/Jackson/Monogame/monogame/DungeonSlime/DungeonSlime/Content/images/noBKG_KnightRun_strip.png</File>
   </SourceFiles>
   <DestFiles>
     <File xsi:nil="true" />
