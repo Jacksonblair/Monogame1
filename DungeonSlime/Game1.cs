@@ -9,6 +9,9 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
+using MonoGame.Extended.Collisions;
+using MonoGame.Extended.Collisions.Layers;
+using MonoGame.Extended.Collisions.QuadTree;
 using MonoGame.Extended.ViewportAdapters;
 using MonoGameLibrary;
 using MonoGameLibrary.Graphics;
@@ -42,6 +45,9 @@ public class Game1 : Core
     // Defines the bounds of the room that the slime and bat are contained within.
     // private Rectangle _roomBounds;
 
+    // Collision test
+    private CollisionComponent _collisionComponent;
+
     LDtkFile LDtkFile;
     LDtkWorld World;
     RendererOne Renderer;
@@ -50,6 +56,7 @@ public class Game1 : Core
 
     // Extended camera
     OrthographicCamera _camera;
+    List<CubeEntity> _cubeEntities = new List<CubeEntity>();
 
     // 1. Core systems in constructor
     public Game1()
@@ -68,9 +75,47 @@ public class Game1 : Core
         World = LDtkFile.LoadWorld(Worlds.World.Iid);
         Renderer = new RendererOne(SpriteBatch);
 
+        var worldBounds = LdtkWorldBoundsHelper.GetWorldBounds(World);
+
+        // Level collision
+        _collisionComponent = new CollisionComponent(
+            new RectangleF(0, 0, worldBounds.Width, worldBounds.Height)
+        );
+
+        // Add layer for level collision blocks
+        QuadTreeSpace quadTreeSpace = new QuadTreeSpace(
+            new RectangleF(0, 0, worldBounds.Width, worldBounds.Height)
+        );
+
+        Layer myQuadLayer = new Layer(quadTreeSpace);
+        _collisionComponent.Add("Collision", myQuadLayer);
+
+        // Add all blocks from collision level
         foreach (LDtkLevel level in World.Levels)
         {
             Renderer.PrerenderLevel(level);
+            LDtkIntGrid collisions = level.GetIntGrid("Collisions");
+            var tileSize = collisions.TileSize;
+            var intGridIterator = new IntGridTileIterator(collisions, level.Position.ToVector2());
+
+            foreach (var tile in intGridIterator)
+            {
+                if (tile.Value > 0)
+                {
+                    var collider = new CubeEntity(
+                        new RectangleF(
+                            tile.WorldX,
+                            tile.WorldY,
+                            collisions.TileSize,
+                            collisions.TileSize
+                        ),
+                        "Collision"
+                    );
+
+                    _cubeEntities.Add(collider);
+                    _collisionComponent.Insert(collider);
+                }
+            }
         }
 
         var viewportAdapter = new BoxingViewportAdapter(Window, GraphicsDevice, 800, 480);
@@ -78,6 +123,8 @@ public class Game1 : Core
 
         var playerData = World.GetEntity<Player>();
         this.player = new PlayerEntity(playerData, Renderer, Content);
+
+        _collisionComponent.Insert(player);
 
         // Rectangle screenBounds = GraphicsDevice.PresentationParameters.Bounds;
 
@@ -130,120 +177,22 @@ public class Game1 : Core
         )
             Exit();
 
-        // Update the slime animated sprite.
-        // _slime.Update(gameTime);
-
-        // Update the bat animated sprite.
-        // _bat.Update(gameTime);
-
         // Check for keyboard input and handle it.
         CheckKeyboardInput();
 
         // Check for gamepad input and handle it.
         CheckGamePadInput();
 
-        // Create a bounding rectangle for the screen
-        // Rectangle screenBounds = new Rectangle(
-        //     0,
-        //     0,
-        //     GraphicsDevice.PresentationParameters.BackBufferWidth,
-        //     GraphicsDevice.PresentationParameters.BackBufferHeight
+        // _camera.Position = player.Position;
+        _camera.LookAt(player.Position);
+        //  (
+        //     GetCameraMovementDirection() * movementSpeed * gameTime.GetElapsedSeconds()
         // );
-
-        // Creating a bounding circle for the slime
-        // Circle slimeBounds = new Circle(
-        //     (int)(_slimePosition.X + (_slime.Width * 0.5f)),
-        //     (int)(_slimePosition.Y + (_slime.Height * 0.5f)),
-        //     (int)(_slime.Width * 0.5f)
-        // );
-
-        // // Use distance based checks to determine if the slime is within the
-        // // bounds of the game screen, and if it is outside that screen edge,
-        // // move it back inside.
-        // if (slimeBounds.Left < _roomBounds.Left)
-        // {
-        //     _slimePosition.X = _roomBounds.Left;
-        // }
-        // else if (slimeBounds.Right > _roomBounds.Right)
-        // {
-        //     _slimePosition.X = _roomBounds.Right - _slime.Width;
-        // }
-
-        // if (slimeBounds.Top < _roomBounds.Top)
-        // {
-        //     _slimePosition.Y = _roomBounds.Top;
-        // }
-        // else if (slimeBounds.Bottom > _roomBounds.Bottom)
-        // {
-        //     _slimePosition.Y = _roomBounds.Bottom - _slime.Height;
-        // }
-
-        // // Calculate the new position of the bat based on the velocity
-        // Vector2 newBatPosition = _batPosition + _batVelocity;
-
-        // // Create a bounding circle for the bat
-        // Circle batBounds = new Circle(
-        //     (int)(newBatPosition.X + (_bat.Width * 0.5f)),
-        //     (int)(newBatPosition.Y + (_bat.Height * 0.5f)),
-        //     (int)(_bat.Width * 0.5f)
-        // );
-
-        // Vector2 normal = Vector2.Zero;
-
-        // Use distance based checks to determine if the bat is within the
-        // bounds of the game screen, and if it is outside that screen edge,
-        // reflect it about the screen edge normal
-        // if (batBounds.Left < _roomBounds.Left)
-        // {
-        //     normal.X = Vector2.UnitX.X;
-        //     newBatPosition.X = _roomBounds.Left;
-        // }
-        // else if (batBounds.Right > _roomBounds.Right)
-        // {
-        //     normal.X = -Vector2.UnitX.X;
-        //     newBatPosition.X = _roomBounds.Right - _bat.Width;
-        // }
-
-        // if (batBounds.Top < _roomBounds.Top)
-        // {
-        //     normal.Y = Vector2.UnitY.Y;
-        //     newBatPosition.Y = _roomBounds.Top;
-        // }
-        // else if (batBounds.Bottom > _roomBounds.Bottom)
-        // {
-        //     normal.Y = -Vector2.UnitY.Y;
-        //     newBatPosition.Y = _roomBounds.Bottom - _bat.Height;
-        // }
-
-        // // If the normal is anything but Vector2.Zero, this means the bat had
-        // // moved outside the screen edge so we should reflect it about the
-        // // normal.
-        // if (normal != Vector2.Zero)
-        // {
-        //     _batVelocity = Vector2.Reflect(_batVelocity, normal);
-        // }
-
-        // _batPosition = newBatPosition;
-
-        // if (slimeBounds.Intersects(batBounds))
-        // {
-        //     // Choose a random row and column based on the total number of each
-        //     int column = Random.Shared.Next(1, _tilemap.Columns - 1);
-        //     int row = Random.Shared.Next(1, _tilemap.Rows - 1);
-
-        //     // Change the bat position by setting the x and y values equal to
-        //     // the column and row multiplied by the width and height.
-        //     _batPosition = new Vector2(column * _bat.Width, row * _bat.Height);
-
-        //     // Assign a new random velocity to the bat
-        //     AssignRandomBatVelocity();
-        // }
-
-        const float movementSpeed = 200;
-        _camera.Move(GetCameraMovementDirection() * movementSpeed * gameTime.GetElapsedSeconds());
+        // const float movementSpeed = 200;
         AdjustCameraZoom();
 
         player.Update(gameTime);
+        _collisionComponent.Update(gameTime);
 
         base.Update(gameTime);
     }
@@ -428,7 +377,8 @@ public class Game1 : Core
             }
         }
 
-        player.Draw(gameTime);
+        player.Draw(SpriteBatch, gameTime);
+        _cubeEntities.ForEach(ce => ce.Draw(SpriteBatch));
 
         SpriteBatch.End();
 

@@ -26,8 +26,6 @@ c:\Users\Jackson\Monogame\monogame\DungeonSlime\DungeonSlime\bin\Debug\net8.0\ru
 c:\Users\Jackson\Monogame\monogame\DungeonSlime\DungeonSlime\bin\Debug\net8.0\Library1.dll
 c:\Users\Jackson\Monogame\monogame\DungeonSlime\DungeonSlime\bin\Debug\net8.0\MonoGame.Extended.dll
 c:\Users\Jackson\Monogame\monogame\DungeonSlime\DungeonSlime\bin\Debug\net8.0\Library1.pdb
-c:\Users\Jackson\Monogame\monogame\DungeonSlime\DungeonSlime\bin\Debug\net8.0\MonoGame.Extended.pdb
-c:\Users\Jackson\Monogame\monogame\DungeonSlime\DungeonSlime\bin\Debug\net8.0\MonoGame.Extended.xml
 c:\Users\Jackson\Monogame\monogame\DungeonSlime\DungeonSlime\obj\Debug\net8.0\DungeonSlime.csproj.AssemblyReference.cache
 c:\Users\Jackson\Monogame\monogame\DungeonSlime\DungeonSlime\obj\Debug\net8.0\DungeonSlime.GeneratedMSBuildEditorConfig.editorconfig
 c:\Users\Jackson\Monogame\monogame\DungeonSlime\DungeonSlime\obj\Debug\net8.0\DungeonSlime.AssemblyInfoInputs.cache

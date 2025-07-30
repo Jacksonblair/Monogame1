@@ -25,6 +25,19 @@
           "build/MonoGame.Content.Builder.Task.targets": {}
         }
       },
+      "MonoGame.Extended/4.0.4": {
+        "type": "package",
+        "compile": {
+          "lib/net8.0/MonoGame.Extended.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/MonoGame.Extended.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "MonoGame.Framework.DesktopGL/3.8.4": {
         "type": "package",
         "dependencies": {
@@ -185,6 +198,21 @@
         "monogame.content.builder.task.nuspec"
       ]
     },
+    "MonoGame.Extended/4.0.4": {
+      "sha512": "4CXSHzChnp72GXZo/RoK+iKL7nm1X1XI6uer/osbSjyT+YGhXwnta6+P5+ZnwNp+NyeZtYuN+q/9L98pJgYCHQ==",
+      "type": "package",
+      "path": "monogame.extended/4.0.4",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "README.md",
+        "lib/net8.0/MonoGame.Extended.dll",
+        "lib/net8.0/MonoGame.Extended.xml",
+        "logo-nuget-128.png",
+        "monogame.extended.4.0.4.nupkg.sha512",
+        "monogame.extended.nuspec"
+      ]
+    },
     "MonoGame.Framework.DesktopGL/3.8.4": {
       "sha512": "2WR/vPNPcmQ9h4EhMkfpUfMW0Krm6pX0ElkZwSRI1IUecPuzLeXt0i9NRwGxZBUdcNdNxACCmswrxSf4B95Obg==",
       "type": "package",
@@ -334,6 +362,7 @@
       "LDtkMonogame >= 1.8.0",
       "Library1 >= 1.0.0",
       "MonoGame.Content.Builder.Task >= 3.8.*",
+      "MonoGame.Extended >= 4.0.4",
       "MonoGame.Framework.DesktopGL >= 3.8.*"
     ]
   },
@@ -387,6 +416,10 @@
           "MonoGame.Content.Builder.Task": {
             "target": "Package",
             "version": "[3.8.*, )"
+          },
+          "MonoGame.Extended": {
+            "target": "Package",
+            "version": "[4.0.4, )"
           },
           "MonoGame.Framework.DesktopGL": {
             "target": "Package",
