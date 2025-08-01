@@ -4,10 +4,10 @@
   <Platform>DesktopGL</Platform>
   <Config />
   <SourceFiles>
-    <File>c:/Users/Jackson/Monogame/monogame/DungeonSlime/DungeonSlime/Content/images/atlas.png</File>
-    <File>c:/Users/Jackson/Monogame/monogame/DungeonSlime/DungeonSlime/Content/images/logo.png</File>
-    <File>c:/Users/Jackson/Monogame/monogame/DungeonSlime/DungeonSlime/Content/images/noBKG_KnightIdle_strip.png</File>
-    <File>c:/Users/Jackson/Monogame/monogame/DungeonSlime/DungeonSlime/Content/images/noBKG_KnightRun_strip.png</File>
+    <File>C:/Users/Jackson/Monogame/monogame/DungeonSlime/DungeonSlime/Content/images/atlas.png</File>
+    <File>C:/Users/Jackson/Monogame/monogame/DungeonSlime/DungeonSlime/Content/images/logo.png</File>
+    <File>C:/Users/Jackson/Monogame/monogame/DungeonSlime/DungeonSlime/Content/images/noBKG_KnightIdle_strip.png</File>
+    <File>C:/Users/Jackson/Monogame/monogame/DungeonSlime/DungeonSlime/Content/images/noBKG_KnightRun_strip.png</File>
   </SourceFiles>
   <DestFiles>
     <File xsi:nil="true" />

@@ -21,6 +21,8 @@ namespace DungeonSlime;
 
 public class Game1 : Core
 {
+    ProgramStartOptions startOpts;
+
     // Defines the slime animated sprite.
     // private AnimatedSprite _slime;
 
@@ -59,8 +61,11 @@ public class Game1 : Core
     List<CubeEntity> _cubeEntities = new List<CubeEntity>();
 
     // 1. Core systems in constructor
-    public Game1()
-        : base("Dungeon Slime", 1280, 720, false) { }
+    public Game1(ProgramStartOptions startOpts)
+        : base("Dungeon Slime", 1280, 720, false)
+    {
+        this.startOpts = startOpts;
+    }
 
     // 2. Game specific initialisations in Initialize
     protected override void Initialize()

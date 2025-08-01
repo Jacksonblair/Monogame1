@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "S78WYZ4hWXooX3k0FTVG2vsJogZjT3A2H7OPVkUXrYVW4T0JP/O5THVlTnwDK9bFrRKhF7qJeXO4hjto9ZrFxQ==",
+  "dgSpecHash": "aMCDiKEPaczE9gcEsL6xEcjzy9RdgDZm2ny03IIZqsSH17ge/4QXSl+AKj4Mwyi1q77xMBwm4hlIaeLXve36Qg==",
   "success": true,
-  "projectFilePath": "c:\\Users\\Jackson\\Monogame\\monogame\\DungeonSlime\\Library1\\Library1.csproj",
+  "projectFilePath": "C:\\Users\\Jackson\\Monogame\\monogame\\DungeonSlime\\Library1\\Library1.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Jackson\\.nuget\\packages\\monogame.framework.desktopgl\\3.8.4\\monogame.framework.desktopgl.3.8.4.nupkg.sha512",
     "C:\\Users\\Jackson\\.nuget\\packages\\monogame.library.openal\\1.23.1.10\\monogame.library.openal.1.23.1.10.nupkg.sha512",
