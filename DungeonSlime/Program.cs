@@ -8,7 +8,7 @@ namespace DungeonSlime
         [Option("mode", Default = "client", HelpText = "Mode to run: server or client.")]
         public string Mode { get; set; }
 
-        [Option("host", Default = "localhost", HelpText = "Server hostname for client mode.")]
+        [Option("host", Default = "127.0.0.1", HelpText = "Server hostname for client mode.")]
         public string Host { get; set; }
 
         [Option("port", Default = 12345, HelpText = "Port number.")]

@@ -16,6 +16,7 @@ using MonoGame.Extended.ViewportAdapters;
 using MonoGameLibrary;
 using MonoGameLibrary.Graphics;
 using MonoGameLibrary.Input;
+using NetcodeIO.NET;
 
 namespace DungeonSlime;
 
@@ -70,6 +71,15 @@ public class Game1 : Core
     // 2. Game specific initialisations in Initialize
     protected override void Initialize()
     {
+        Server server = new Server(
+            999, // int maximum number of clients which can connect to this server at one time
+            startOpts.Host,
+            startOpts.Port, // string public address and int port clients will connect to
+            123, // ulong protocol ID shared between clients and server
+            new byte[1234] // byte[32] private crypto key shared between backend servers
+        );
+        server.Start(); // start the server running
+
         // TODO: Add your initialization logic here
 
         base.Initialize(); // Should never be removed,  as this is where the graphics device is initialized for the target platform.
