@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGameLibrary.Input;
 
-namespace Library1;
+namespace DungeonSlime.Shared;
 
 public class Core : Game
 {

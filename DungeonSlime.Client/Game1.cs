@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using DungeonSlime.Shared;
 using LDtk;
 // Optional
 using LDtk.Renderer;
 using LDtkTypes;
-using Library1;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -31,10 +31,12 @@ public class Game1 : Core
     // private AnimatedSprite _bat;
 
     // Tracks the position of the slime.
-    private Vector2 _slimePosition;
+    // private Vector2 _slimePosition;
 
     // Speed multiplier when moving.
     private const float MOVEMENT_SPEED = 5.0f;
+
+    List<PlayerEntity> players = new List<PlayerEntity>();
 
     // Tracks the position of the bat.
     // private Vector2 _batPosition;
@@ -136,10 +138,10 @@ public class Game1 : Core
         var viewportAdapter = new BoxingViewportAdapter(Window, GraphicsDevice, 800, 480);
         _camera = new OrthographicCamera(viewportAdapter);
 
-        var playerData = World.GetEntity<Player>();
-        this.player = new PlayerEntity(playerData, Renderer, Content);
+        // var playerData = World.GetEntity<Player>();
+        // this.player = new PlayerEntity(playerData, Renderer, Content);
 
-        _collisionComponent.Insert(player);
+        // _collisionComponent.Insert(player);
 
         // Rectangle screenBounds = GraphicsDevice.PresentationParameters.Bounds;
 
@@ -193,22 +195,24 @@ public class Game1 : Core
             Exit();
 
         // Check for keyboard input and handle it.
-        CheckKeyboardInput();
+        // CheckKeyboardInput();
 
         // Check for gamepad input and handle it.
-        CheckGamePadInput();
+        // CheckGamePadInput();
 
         // _camera.Position = player.Position;
-        _camera.LookAt(player.Position);
+        // _camera.LookAt(player.Position);
         //  (
         //     GetCameraMovementDirection() * movementSpeed * gameTime.GetElapsedSeconds()
         // );
         // const float movementSpeed = 200;
-        AdjustCameraZoom();
+        // AdjustCameraZoom();
+        // player.Update(gameTime);
 
-        player.Update(gameTime);
+
+
+
         _collisionComponent.Update(gameTime);
-
         base.Update(gameTime);
     }
 
@@ -273,88 +277,88 @@ public class Game1 : Core
     private void CheckKeyboardInput()
     {
         // If the space key is held down, the movement speed increases by 1.5
-        float speed = MOVEMENT_SPEED;
-        if (Input.Keyboard.IsKeyDown(Keys.Space))
-        {
-            speed *= 1.5f;
-        }
+        // float speed = MOVEMENT_SPEED;
+        // if (Input.Keyboard.IsKeyDown(Keys.Space))
+        // {
+        //     speed *= 1.5f;
+        // }
 
-        // If the W or Up keys are down, move the slime up on the screen.
-        if (Input.Keyboard.IsKeyDown(Keys.W) || Input.Keyboard.IsKeyDown(Keys.Up))
-        {
-            _slimePosition.Y -= speed;
-        }
+        // // If the W or Up keys are down, move the slime up on the screen.
+        // if (Input.Keyboard.IsKeyDown(Keys.W) || Input.Keyboard.IsKeyDown(Keys.Up))
+        // {
+        //     _slimePosition.Y -= speed;
+        // }
 
-        // if the S or Down keys are down, move the slime down on the screen.
-        if (Input.Keyboard.IsKeyDown(Keys.S) || Input.Keyboard.IsKeyDown(Keys.Down))
-        {
-            _slimePosition.Y += speed;
-        }
+        // // if the S or Down keys are down, move the slime down on the screen.
+        // if (Input.Keyboard.IsKeyDown(Keys.S) || Input.Keyboard.IsKeyDown(Keys.Down))
+        // {
+        //     _slimePosition.Y += speed;
+        // }
 
-        // If the A or Left keys are down, move the slime left on the screen.
-        if (Input.Keyboard.IsKeyDown(Keys.A) || Input.Keyboard.IsKeyDown(Keys.Left))
-        {
-            _slimePosition.X -= speed;
-        }
+        // // If the A or Left keys are down, move the slime left on the screen.
+        // if (Input.Keyboard.IsKeyDown(Keys.A) || Input.Keyboard.IsKeyDown(Keys.Left))
+        // {
+        //     _slimePosition.X -= speed;
+        // }
 
-        // If the D or Right keys are down, move the slime right on the screen.
-        if (Input.Keyboard.IsKeyDown(Keys.D) || Input.Keyboard.IsKeyDown(Keys.Right))
-        {
-            _slimePosition.X += speed;
-        }
+        // // If the D or Right keys are down, move the slime right on the screen.
+        // if (Input.Keyboard.IsKeyDown(Keys.D) || Input.Keyboard.IsKeyDown(Keys.Right))
+        // {
+        //     _slimePosition.X += speed;
+        // }
     }
 
     private void CheckGamePadInput()
     {
-        GamePadInfo gamePadOne = Input.GamePads[(int)PlayerIndex.One];
+        // GamePadInfo gamePadOne = Input.GamePads[(int)PlayerIndex.One];
 
-        // If the A button is held down, the movement speed increases by 1.5
-        // and the gamepad vibrates as feedback to the player.
-        float speed = MOVEMENT_SPEED;
-        if (gamePadOne.IsButtonDown(Buttons.A))
-        {
-            speed *= 1.5f;
-            gamePadOne.SetVibration(1.0f, TimeSpan.FromSeconds(1));
-        }
-        else
-        {
-            gamePadOne.StopVibration();
-        }
+        // // If the A button is held down, the movement speed increases by 1.5
+        // // and the gamepad vibrates as feedback to the player.
+        // float speed = MOVEMENT_SPEED;
+        // if (gamePadOne.IsButtonDown(Buttons.A))
+        // {
+        //     speed *= 1.5f;
+        //     gamePadOne.SetVibration(1.0f, TimeSpan.FromSeconds(1));
+        // }
+        // else
+        // {
+        //     gamePadOne.StopVibration();
+        // }
 
-        // Check thumbstick first since it has priority over which gamepad input
-        // is movement.  It has priority since the thumbstick values provide a
-        // more granular analog value that can be used for movement.
-        if (gamePadOne.LeftThumbStick != Vector2.Zero)
-        {
-            _slimePosition.X += gamePadOne.LeftThumbStick.X * speed;
-            _slimePosition.Y -= gamePadOne.LeftThumbStick.Y * speed;
-        }
-        else
-        {
-            // If DPadUp is down, move the slime up on the screen.
-            if (gamePadOne.IsButtonDown(Buttons.DPadUp))
-            {
-                _slimePosition.Y -= speed;
-            }
+        // // Check thumbstick first since it has priority over which gamepad input
+        // // is movement.  It has priority since the thumbstick values provide a
+        // // more granular analog value that can be used for movement.
+        // if (gamePadOne.LeftThumbStick != Vector2.Zero)
+        // {
+        //     _slimePosition.X += gamePadOne.LeftThumbStick.X * speed;
+        //     _slimePosition.Y -= gamePadOne.LeftThumbStick.Y * speed;
+        // }
+        // else
+        // {
+        //     // If DPadUp is down, move the slime up on the screen.
+        //     if (gamePadOne.IsButtonDown(Buttons.DPadUp))
+        //     {
+        //         _slimePosition.Y -= speed;
+        //     }
 
-            // If DPadDown is down, move the slime down on the screen.
-            if (gamePadOne.IsButtonDown(Buttons.DPadDown))
-            {
-                _slimePosition.Y += speed;
-            }
+        //     // If DPadDown is down, move the slime down on the screen.
+        //     if (gamePadOne.IsButtonDown(Buttons.DPadDown))
+        //     {
+        //         _slimePosition.Y += speed;
+        //     }
 
-            // If DPapLeft is down, move the slime left on the screen.
-            if (gamePadOne.IsButtonDown(Buttons.DPadLeft))
-            {
-                _slimePosition.X -= speed;
-            }
+        //     // If DPapLeft is down, move the slime left on the screen.
+        //     if (gamePadOne.IsButtonDown(Buttons.DPadLeft))
+        //     {
+        //         _slimePosition.X -= speed;
+        //     }
 
-            // If DPadRight is down, move the slime right on the screen.
-            if (gamePadOne.IsButtonDown(Buttons.DPadRight))
-            {
-                _slimePosition.X += speed;
-            }
-        }
+        //     // If DPadRight is down, move the slime right on the screen.
+        //     if (gamePadOne.IsButtonDown(Buttons.DPadRight))
+        //     {
+        //         _slimePosition.X += speed;
+        //     }
+        // }
     }
 
     protected override void Draw(GameTime gameTime)

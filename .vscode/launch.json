@@ -5,12 +5,29 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "C#: DungeonSlime Debug w args",
+            "name": "C#: DungeonSlime Server",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "dotnet: build",
-            "program": "${workspaceFolder}/DungeonSlime/bin/Debug/net8.0/DungeonSlime.dll",
-            "args": []
+            "program": "${workspaceFolder}/DungeonSlime.Client/bin/Debug/net8.0/DungeonSlime.Client.dll",
+            "args": ["--mode=server"]
+        },
+        {
+            "name": "C#: DungeonSlime Client",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "dotnet: build",
+            "program": "${workspaceFolder}/DungeonSlime.Client/bin/Debug/net8.0/DungeonSlime.Client.dll",
+            "args": ["--mode=client"]
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Server/Client",
+            "configurations": [
+                "C#: DungeonSlime Server",
+                "C#: DungeonSlime Client"
+            ]
         }
     ]
 }

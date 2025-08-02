@@ -12,4 +12,7 @@ dotnet dotnet tool install --global LDtkMonogame.Codegen --version 1.8.0
 [x] Fix animations
 [x] Add collision to the level
 [ ] Create a server state
+    [ ] Keep track of PlayerEntities
+    [ ] Send server state snapshot
+    [ ] Send player join/leave updates
 [ ] Create two clients, control each and replicate each to one another
