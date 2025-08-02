@@ -69,7 +69,7 @@ public class Game1 : Core
 
         // Join server
         Client client = new Client();
-        
+
         // Called when the client's state has changed
         // Use this to detect when a client has connected to a server, or has been disconnected from a server, or connection times out, etc.
         client.OnStateChanged += ClientStateChanged; // void( ClientState state )
@@ -77,9 +77,6 @@ public class Game1 : Core
         // Called when a payload has been received from the server
         // Note that you should not keep a reference to the payload, as it will be returned to a pool after this call completes.
         client.OnMessageReceived += MessageReceivedHandler; // void( byte[] payload, int payloadSize )
-
-
-
 
         // LDtkFile = LDtkFile.FromFile(
         //     "C:/Users/Jackson/AppData/Local/Programs/ldtk/extraFiles/samples/Typical_TopDown_example_edited.ldtk"
