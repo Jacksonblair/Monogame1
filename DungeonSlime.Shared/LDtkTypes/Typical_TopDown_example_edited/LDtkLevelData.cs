@@ -6,5 +6,7 @@ namespace LDtkTypes;
 using LDtk;
 using Microsoft.Xna.Framework;
 
-public partial class LDtkLevelData { }
+public partial class LDtkLevelData
+{
+}
 #pragma warning restore

@@ -11,4 +11,8 @@
     </PackageReference>
     <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.*" />
   </ItemGroup>
+  <Target Name="Codegen" BeforeTargets="BeforeBuild">
+    <Exec
+      Command="ldtkgen -i C:\Users\Jackson\AppData\Local\Programs\ldtk\extraFiles\samples\Typical_TopDown_example_edited.ldtk" />
+  </Target>
 </Project>

@@ -9,8 +9,8 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "dotnet: build",
-            "program": "${workspaceFolder}/DungeonSlime.Client/bin/Debug/net8.0/DungeonSlime.Client.dll",
-            "args": ["--mode=server"]
+            "program": "${workspaceFolder}/DungeonSlime.Server/bin/Debug/net8.0/DungeonSlime.Server.dll",
+            "args": []
         },
         {
             "name": "C#: DungeonSlime Client",
@@ -18,7 +18,7 @@
             "request": "launch",
             "preLaunchTask": "dotnet: build",
             "program": "${workspaceFolder}/DungeonSlime.Client/bin/Debug/net8.0/DungeonSlime.Client.dll",
-            "args": ["--mode=client"]
+            "args": []
         }
     ],
     "compounds": [

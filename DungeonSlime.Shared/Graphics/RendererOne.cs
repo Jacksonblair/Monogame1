@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.Graphics;
 
-class RendererOne : ExampleRenderer
+public class RendererOne : ExampleRenderer
 {
     public RendererOne(SpriteBatch spriteBatch)
         : base(spriteBatch) { }

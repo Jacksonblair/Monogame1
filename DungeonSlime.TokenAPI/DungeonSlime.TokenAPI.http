@@ -1,0 +1,6 @@
+@DungeonSlime.TokenAPI_HostAddress = http://localhost:5191
+
+GET {{DungeonSlime.TokenAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

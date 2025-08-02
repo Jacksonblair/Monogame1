@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DungeonSlime.Client", "Dung
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DungeonSlime.Shared", "DungeonSlime.Shared\DungeonSlime.Shared.csproj", "{26C4779F-0EF4-472C-A9C1-153C5E8D7712}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DungeonSlime.Server", "DungeonSlime.Server\DungeonSlime.Server.csproj", "{8B1614F4-4796-4528-9BFE-9186FF12E82F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DungeonSlime.TokenAPI", "DungeonSlime.TokenAPI\DungeonSlime.TokenAPI.csproj", "{E310B9F6-6DBE-411E-ADD4-19D711B4AA9E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +28,13 @@ Global
 		{26C4779F-0EF4-472C-A9C1-153C5E8D7712}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{26C4779F-0EF4-472C-A9C1-153C5E8D7712}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{26C4779F-0EF4-472C-A9C1-153C5E8D7712}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B1614F4-4796-4528-9BFE-9186FF12E82F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B1614F4-4796-4528-9BFE-9186FF12E82F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B1614F4-4796-4528-9BFE-9186FF12E82F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B1614F4-4796-4528-9BFE-9186FF12E82F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E310B9F6-6DBE-411E-ADD4-19D711B4AA9E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E310B9F6-6DBE-411E-ADD4-19D711B4AA9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E310B9F6-6DBE-411E-ADD4-19D711B4AA9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E310B9F6-6DBE-411E-ADD4-19D711B4AA9E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

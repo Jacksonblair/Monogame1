@@ -22,21 +22,10 @@ namespace DungeonSlime;
 
 public class Game1 : Core
 {
-    ProgramStartOptions startOpts;
-
-    // Defines the slime animated sprite.
-    // private AnimatedSprite _slime;
-
-    // Defines the bat animated sprite.
-    // private AnimatedSprite _bat;
-
-    // Tracks the position of the slime.
-    // private Vector2 _slimePosition;
+    ClientStartOptions startOpts;
 
     // Speed multiplier when moving.
-    private const float MOVEMENT_SPEED = 5.0f;
-
-    List<PlayerEntity> players = new List<PlayerEntity>();
+    // private const float MOVEMENT_SPEED = 5.0f;
 
     // Tracks the position of the bat.
     // private Vector2 _batPosition;
@@ -51,20 +40,21 @@ public class Game1 : Core
     // private Rectangle _roomBounds;
 
     // Collision test
-    private CollisionComponent _collisionComponent;
+    // private CollisionComponent _collisionComponent;
 
-    LDtkFile LDtkFile;
-    LDtkWorld World;
-    RendererOne Renderer;
-    List<Door> doors = new List<Door>();
-    PlayerEntity player;
+    // LDtkFile LDtkFile;
+    // LDtkWorld World;
+    // RendererOne Renderer;
+    // List<Door> doors = new List<Door>();
+    // PlayerEntity player;
 
     // Extended camera
     OrthographicCamera _camera;
-    List<CubeEntity> _cubeEntities = new List<CubeEntity>();
+
+    // List<CubeEntity> _cubeEntities = new List<CubeEntity>();
 
     // 1. Core systems in constructor
-    public Game1(ProgramStartOptions startOpts)
+    public Game1(ClientStartOptions startOpts)
         : base("Dungeon Slime", 1280, 720, false)
     {
         this.startOpts = startOpts;
@@ -73,67 +63,72 @@ public class Game1 : Core
     // 2. Game specific initialisations in Initialize
     protected override void Initialize()
     {
-        Server server = new Server(
-            999, // int maximum number of clients which can connect to this server at one time
-            startOpts.Host,
-            startOpts.Port, // string public address and int port clients will connect to
-            123, // ulong protocol ID shared between clients and server
-            new byte[1234] // byte[32] private crypto key shared between backend servers
-        );
-        server.Start(); // start the server running
-
         // TODO: Add your initialization logic here
 
         base.Initialize(); // Should never be removed,  as this is where the graphics device is initialized for the target platform.
 
-        LDtkFile = LDtkFile.FromFile(
-            "C:/Users/Jackson/AppData/Local/Programs/ldtk/extraFiles/samples/Typical_TopDown_example_edited.ldtk"
-        );
-        World = LDtkFile.LoadWorld(Worlds.World.Iid);
-        Renderer = new RendererOne(SpriteBatch);
+        // Join server
+        Client client = new Client();
+        
+        // Called when the client's state has changed
+        // Use this to detect when a client has connected to a server, or has been disconnected from a server, or connection times out, etc.
+        client.OnStateChanged += ClientStateChanged; // void( ClientState state )
 
-        var worldBounds = LdtkWorldBoundsHelper.GetWorldBounds(World);
+        // Called when a payload has been received from the server
+        // Note that you should not keep a reference to the payload, as it will be returned to a pool after this call completes.
+        client.OnMessageReceived += MessageReceivedHandler; // void( byte[] payload, int payloadSize )
 
-        // Level collision
-        _collisionComponent = new CollisionComponent(
-            new RectangleF(0, 0, worldBounds.Width, worldBounds.Height)
-        );
 
-        // Add layer for level collision blocks
-        QuadTreeSpace quadTreeSpace = new QuadTreeSpace(
-            new RectangleF(0, 0, worldBounds.Width, worldBounds.Height)
-        );
 
-        Layer myQuadLayer = new Layer(quadTreeSpace);
-        _collisionComponent.Add("Collision", myQuadLayer);
 
-        // Add all blocks from collision level
-        foreach (LDtkLevel level in World.Levels)
-        {
-            Renderer.PrerenderLevel(level);
-            LDtkIntGrid collisions = level.GetIntGrid("Collisions");
-            var tileSize = collisions.TileSize;
-            var intGridIterator = new IntGridTileIterator(collisions, level.Position.ToVector2());
+        // LDtkFile = LDtkFile.FromFile(
+        //     "C:/Users/Jackson/AppData/Local/Programs/ldtk/extraFiles/samples/Typical_TopDown_example_edited.ldtk"
+        // );
+        // World = LDtkFile.LoadWorld(Worlds.World.Iid);
+        // Renderer = new RendererOne(SpriteBatch);
 
-            foreach (var tile in intGridIterator)
-            {
-                if (tile.Value > 0)
-                {
-                    var collider = new CubeEntity(
-                        new RectangleF(
-                            tile.WorldX,
-                            tile.WorldY,
-                            collisions.TileSize,
-                            collisions.TileSize
-                        ),
-                        "Collision"
-                    );
+        // var worldBounds = LdtkWorldBoundsHelper.GetWorldBounds(World);
 
-                    _cubeEntities.Add(collider);
-                    _collisionComponent.Insert(collider);
-                }
-            }
-        }
+        // // Level collision
+        // _collisionComponent = new CollisionComponent(
+        //     new RectangleF(0, 0, worldBounds.Width, worldBounds.Height)
+        // );
+
+        // // Add layer for level collision blocks
+        // QuadTreeSpace quadTreeSpace = new QuadTreeSpace(
+        //     new RectangleF(0, 0, worldBounds.Width, worldBounds.Height)
+        // );
+
+        // Layer myQuadLayer = new Layer(quadTreeSpace);
+        // _collisionComponent.Add("Collision", myQuadLayer);
+
+        // // Add all blocks from collision level
+        // foreach (LDtkLevel level in World.Levels)
+        // {
+        //     Renderer.PrerenderLevel(level);
+        //     LDtkIntGrid collisions = level.GetIntGrid("Collisions");
+        //     var tileSize = collisions.TileSize;
+        //     var intGridIterator = new IntGridTileIterator(collisions, level.Position.ToVector2());
+
+        //     foreach (var tile in intGridIterator)
+        //     {
+        //         if (tile.Value > 0)
+        //         {
+        //             var collider = new CubeEntity(
+        //                 new RectangleF(
+        //                     tile.WorldX,
+        //                     tile.WorldY,
+        //                     collisions.TileSize,
+        //                     collisions.TileSize
+        //                 ),
+        //                 "Collision"
+        //             );
+
+        //             _cubeEntities.Add(collider);
+        //             _collisionComponent.Insert(collider);
+        //         }
+        //     }
+        // }
 
         var viewportAdapter = new BoxingViewportAdapter(Window, GraphicsDevice, 800, 480);
         _camera = new OrthographicCamera(viewportAdapter);
@@ -167,7 +162,19 @@ public class Game1 : Core
         // AssignRandomBatVelocity();
     }
 
+    private void MessageReceivedHandler(byte[] payload, int payloadSize)
+    {
+        Console.WriteLine($"Received message with size: {payloadSize}");
+        Console.WriteLine($"Message: {payload}");
+    }
+
+    private void ClientStateChanged(ClientState state)
+    {
+        Console.WriteLine($"Client state changed to: {state}");
+    }
+
     // LoadContent is executed during the base.Initialize() method call within the Initialize method. It is important to know this because anything being initialized that is dependent on content loaded should be done after the base.Initialize() call and not before.
+
     protected override void LoadContent()
     {
         // Create the texture atlas from the XML configuration file
@@ -209,10 +216,7 @@ public class Game1 : Core
         // AdjustCameraZoom();
         // player.Update(gameTime);
 
-
-
-
-        _collisionComponent.Update(gameTime);
+        // _collisionComponent.Update(gameTime);
         base.Update(gameTime);
     }
 
@@ -389,15 +393,15 @@ public class Game1 : Core
         // SpriteBatch.DrawRectangle(new RectangleF(250,250,50,50), Color.Black, 1f);
         // _spriteBatch.End();
 
-        {
-            foreach (LDtkLevel level in World.Levels)
-            {
-                Renderer.RenderPrerenderedLevel(level);
-            }
-        }
+        // {
+        //     foreach (LDtkLevel level in World.Levels)
+        //     {
+        //         Renderer.RenderPrerenderedLevel(level);
+        //     }
+        // }
 
-        player.Draw(SpriteBatch, gameTime);
-        _cubeEntities.ForEach(ce => ce.Draw(SpriteBatch));
+        // // player.Draw(SpriteBatch, gameTime);
+        // _cubeEntities.ForEach(ce => ce.Draw(SpriteBatch));
 
         SpriteBatch.End();
 

@@ -13,13 +13,15 @@ using MonoGame.Extended.Collisions;
 using MonoGame.Extended.Collisions.Layers;
 using MonoGame.Extended.Graphics;
 
+namespace DungeonSlime.Shared;
+
 enum PlayerAnimationState
 {
     Idle,
     Run
 }
 
-class PlayerEntity : ICollisionActor
+public class PlayerEntity : ICollisionActor
 {
     private Player _data;
     private SpriteSheet _idleSpritesheet;

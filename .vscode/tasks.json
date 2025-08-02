@@ -1,0 +1,12 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Run ldtkgen",
+            "type": "shell",
+            "command": "ldtkgen -i C:/Users/Jackson/AppData/Local/Programs/ldtk/extraFiles/samples/Typical_TopDown_example_edited.ldtk -o ./DungeonSlime.Shared/LDtkTypes",
+            "group": "build",
+            "problemMatcher": []
+        }
+    ]
+}
