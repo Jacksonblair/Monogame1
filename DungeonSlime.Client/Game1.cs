@@ -78,12 +78,12 @@ public class Game1 : Core
         // Note that you should not keep a reference to the payload, as it will be returned to a pool after this call completes.
         client.OnMessageReceived += MessageReceivedHandler; // void( byte[] payload, int payloadSize )
 
-        connectTokenGetter = new ConnectTokenGetter(EnvSettings.LoadTokenApiURL() + "/api/token");
+        connectTokenGetter = new ConnectTokenGetter();
         connectTokenGetter
             .GetConnectTokenAsync()
             .ContinueWith(t =>
             {
-                Console.WriteLine($"Got connect token: {t.Result}");
+                Console.WriteLine($"Got connect token: {t.Result.ToString()}");
                 client.Connect(t.Result);
             });
 

@@ -42,9 +42,9 @@
         {
             "name": "DungeonSlime TokenAPI/Server/Client",
             "configurations": [
-                "DungeonSlime Token API"
-                // "DungeonSlime Server",
-                // "DungeonSlime Client"
+                "DungeonSlime Token API",
+                "DungeonSlime Server",
+                "DungeonSlime Client"
             ]
         }
     ]

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using CommandLine;
 
 namespace DungeonSlime
@@ -9,7 +10,14 @@ namespace DungeonSlime
     {
         public static void Main(string[] args)
         {
-            DotNetEnv.Env.Load("../.env");
+            var env = Environment.GetEnvironmentVariable("ENVIRONMENT");
+            if (env == "Development")
+            {
+                DotNetEnv.Env.Load(
+                    Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", ".env")
+                );
+            }
+            ;
 
             Parser
                 .Default.ParseArguments<ClientStartOptions>(args)

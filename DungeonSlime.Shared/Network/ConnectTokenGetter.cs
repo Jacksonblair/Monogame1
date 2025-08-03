@@ -7,10 +7,10 @@ public class ConnectTokenGetter
     private readonly HttpClient _httpClient;
     private readonly string _tokenEndpoint;
 
-    public ConnectTokenGetter(string baseAddress)
+    public ConnectTokenGetter()
     {
+        _tokenEndpoint = "http://" + EnvSettings.LoadTokenApiURL() + "/api/token";
         _httpClient = new HttpClient();
-        _tokenEndpoint = $"{baseAddress.TrimEnd('/')}/token"; // assumes your endpoint is GET /token
     }
 
     public async Task<byte[]> GetConnectTokenAsync()

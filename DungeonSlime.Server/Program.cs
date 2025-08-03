@@ -1,40 +1,24 @@
 ﻿using System;
+using System.IO;
 using CommandLine;
 
 namespace DungeonSlime.Server
 {
-    public class ServerStartOptions
-    {
-        [Option("host", Default = "127.0.0.1", HelpText = "Server hostname for client mode.")]
-        public string Host { get; set; }
-
-        [Option("port", Default = 12345, HelpText = "Port number.")]
-        public int Port { get; set; }
-
-        [Option("debug", Default = false, HelpText = "Enable debug output.")]
-        public bool Debug { get; set; }
-    }
-
     public static class Program
     {
         public static void Main(string[] args)
         {
-            DotNetEnv.Env.Load("../.env");
+            var env = Environment.GetEnvironmentVariable("ENVIRONMENT");
+            if (env == "Development")
+            {
+                DotNetEnv.Env.Load(
+                    Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", ".env")
+                );
+            }
+            ;
 
-            Parser
-                .Default.ParseArguments<ServerStartOptions>(args)
-                .WithParsed(opts =>
-                {
-                    Console.WriteLine($"Host: {opts.Host}, Port: {opts.Port}, Debug: {opts.Debug}");
-
-                    using var game = new GameServer(opts);
-                    game.Run();
-                    // Start server or client based on opts.Mode
-                })
-                .WithNotParsed(errs =>
-                {
-                    // Handle errors
-                });
+            using var game = new GameServer();
+            game.Run();
         }
     }
 }
