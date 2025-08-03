@@ -5,28 +5,46 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "C#: DungeonSlime Server",
+            "name": "DungeonSlime Server",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "dotnet: build",
             "program": "${workspaceFolder}/DungeonSlime.Server/bin/Debug/net8.0/DungeonSlime.Server.dll",
-            "args": []
+            "args": [],
+            "env": {
+                "ENVIRONMENT": "Development"
+            }
         },
         {
-            "name": "C#: DungeonSlime Client",
+            "name": "DungeonSlime Client",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "dotnet: build",
             "program": "${workspaceFolder}/DungeonSlime.Client/bin/Debug/net8.0/DungeonSlime.Client.dll",
-            "args": []
+            "args": [],
+            "env": {
+                "ENVIRONMENT": "Development"
+            }
+        },
+        {
+            "name": "DungeonSlime Token API",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "dotnet: build",
+            "program": "${workspaceFolder}/DungeonSlime.TokenAPI/bin/Debug/net8.0/DungeonSlime.TokenAPI.dll",
+            "args": [],
+            "env": {
+                "ENVIRONMENT": "Development"
+            }
         }
     ],
     "compounds": [
         {
-            "name": "Server/Client",
+            "name": "DungeonSlime TokenAPI/Server/Client",
             "configurations": [
-                "C#: DungeonSlime Server",
-                "C#: DungeonSlime Client"
+                "DungeonSlime Token API"
+                // "DungeonSlime Server",
+                // "DungeonSlime Client"
             ]
         }
     ]

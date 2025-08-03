@@ -19,6 +19,8 @@ namespace DungeonSlime.Server
     {
         public static void Main(string[] args)
         {
+            DotNetEnv.Env.Load("../.env");
+
             Parser
                 .Default.ParseArguments<ServerStartOptions>(args)
                 .WithParsed(opts =>

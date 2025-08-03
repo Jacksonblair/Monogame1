@@ -6,16 +6,13 @@ using NetcodeIO.NET;
 [Route("api/[controller]")]
 public class TokenController : ControllerBase
 {
-    EnvSettings envSettings;
     TokenFactory tokenFactory;
 
     public TokenController()
     {
-        this.envSettings = new EnvSettings();
-
         tokenFactory = new TokenFactory(
-            envSettings.ProtocolId, // must be the same protocol ID as passed to both client and server constructors
-            envSettings.PrivateKey // byte[32], must be the same as the private key passed to the Server constructor
+            EnvSettings.LoadProtocolId(), // must be the same protocol ID as passed to both client and server constructors
+            EnvSettings.LoadPrivateKey() // byte[32], must be the same as the private key passed to the Server constructor
         );
     }
 
@@ -33,7 +30,10 @@ public class TokenController : ControllerBase
 
         var endpoints = new IPEndPoint[]
         {
-            new IPEndPoint(IPAddress.Parse(envSettings.ServerHost), envSettings.ServerPort) // Replace with real game server IP
+            new IPEndPoint(
+                IPAddress.Parse(EnvSettings.LoadServerHost()),
+                EnvSettings.LoadServerPort()
+            ) // Replace with real game server IP
         };
 
         int expirySeconds = 30;

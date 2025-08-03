@@ -23,6 +23,7 @@ namespace DungeonSlime;
 public class Game1 : Core
 {
     ClientStartOptions startOpts;
+    ConnectTokenGetter connectTokenGetter;
 
     // Speed multiplier when moving.
     // private const float MOVEMENT_SPEED = 5.0f;
@@ -64,7 +65,6 @@ public class Game1 : Core
     protected override void Initialize()
     {
         // TODO: Add your initialization logic here
-
         base.Initialize(); // Should never be removed,  as this is where the graphics device is initialized for the target platform.
 
         // Join server
@@ -77,6 +77,15 @@ public class Game1 : Core
         // Called when a payload has been received from the server
         // Note that you should not keep a reference to the payload, as it will be returned to a pool after this call completes.
         client.OnMessageReceived += MessageReceivedHandler; // void( byte[] payload, int payloadSize )
+
+        connectTokenGetter = new ConnectTokenGetter(EnvSettings.LoadTokenApiURL() + "/api/token");
+        connectTokenGetter
+            .GetConnectTokenAsync()
+            .ContinueWith(t =>
+            {
+                Console.WriteLine($"Got connect token: {t.Result}");
+                client.Connect(t.Result);
+            });
 
         // LDtkFile = LDtkFile.FromFile(
         //     "C:/Users/Jackson/AppData/Local/Programs/ldtk/extraFiles/samples/Typical_TopDown_example_edited.ldtk"
