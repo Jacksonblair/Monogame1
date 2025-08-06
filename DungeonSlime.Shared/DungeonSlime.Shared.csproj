@@ -5,6 +5,7 @@
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.9.1" />
     <PackageReference Include="LDtkMonogame" Version="1.8.0" />
+    <PackageReference Include="MessagePack" Version="3.1.4" />
     <PackageReference Include="MonoGame.Extended" Version="4.0.4" />
     <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.*">
       <PrivateAssets>All</PrivateAssets>
@@ -12,7 +13,6 @@
     <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.*" />
   </ItemGroup>
   <Target Name="Codegen" BeforeTargets="BeforeBuild">
-    <Exec
-      Command="ldtkgen -i C:\Users\Jackson\AppData\Local\Programs\ldtk\extraFiles\samples\Typical_TopDown_example_edited.ldtk" />
+    <Exec Command="ldtkgen -i C:\Users\Jackson\AppData\Local\Programs\ldtk\extraFiles\samples\Typical_TopDown_example_edited.ldtk" />
   </Target>
 </Project>

@@ -11,9 +11,15 @@ dotnet dotnet tool install --global LDtkMonogame.Codegen --version 1.8.0
 [x] Add collision to the level
 [ ] Create a server state
     [x] Create Token API, generate token and get it on the client and send to server
-    [ ] Server must accept connection
-    [ ] Send message from client to server
-    [ ] Send message from server to client
+    [x] Server must accept connection
+    [x] Send message from client to server
+    [x] Send message from server to client
+    [ ] Log in to Server
+        [ ] Get snapshot of players
+        [ ] Spawn player
+        [ ] Tell everyone player was spawned
+
+
     [ ] Keep track of PlayerEntities
     [ ] Send server state snapshot
     [ ] Send player join/leave updates

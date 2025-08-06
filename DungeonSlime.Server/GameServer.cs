@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using DungeonSlime.Shared;
+using DungeonSlime.Shared.Network;
+using MessagePack;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -12,13 +14,14 @@ public class GameServer : Core
 {
     List<PlayerEntity> players = new List<PlayerEntity>();
     private int logMessageHandler;
+    NetcodeIO.NET.Server server;
 
     public GameServer()
         : base("Dungeon Slime", 1280, 720, false) { }
 
     protected override void Initialize()
     {
-        NetcodeIO.NET.Server server = new NetcodeIO.NET.Server(
+        server = new NetcodeIO.NET.Server(
             999, // int maximum number of clients which can connect to this server at one time
             EnvSettings.LoadServerHost(),
             EnvSettings.LoadServerPort(), // string public address and int port clients will connect to
@@ -47,7 +50,14 @@ public class GameServer : Core
         base.Initialize();
     }
 
-    private void messageReceivedHandler(RemoteClient sender, byte[] payload, int payloadSize) { }
+    private void messageReceivedHandler(RemoteClient sender, byte[] payload, int payloadSize)
+    {
+        NetworkedPlayer player = MessagePackSerializer.Deserialize<NetworkedPlayer>(payload);
+        Console.WriteLine(player.ToString());
+        Console.WriteLine($"Received Packet: {MessagePackSerializer.ConvertToJson(payload)}");
+
+        sender.SendPayload(payload, payloadSize);
+    }
 
     private void clientDisconnectedHandler(RemoteClient client)
     {

@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using DungeonSlime.Shared;
+using DungeonSlime.Shared.Network;
 using LDtk;
 // Optional
 using LDtk.Renderer;
 using LDtkTypes;
+using MessagePack;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -22,6 +24,9 @@ namespace DungeonSlime;
 
 public class Game1 : Core
 {
+    Client client;
+    ClientState clientState = ClientState.Disconnected;
+    byte[] clientToken;
     ClientStartOptions startOpts;
     ConnectTokenGetter connectTokenGetter;
 
@@ -68,7 +73,7 @@ public class Game1 : Core
         base.Initialize(); // Should never be removed,  as this is where the graphics device is initialized for the target platform.
 
         // Join server
-        Client client = new Client();
+        client = new Client();
 
         // Called when the client's state has changed
         // Use this to detect when a client has connected to a server, or has been disconnected from a server, or connection times out, etc.
@@ -83,8 +88,9 @@ public class Game1 : Core
             .GetConnectTokenAsync()
             .ContinueWith(t =>
             {
-                Console.WriteLine($"Got connect token: {t.Result.ToString()}");
-                client.Connect(t.Result);
+                this.clientToken = t.Result;
+                Console.WriteLine($"Got connect token: {clientToken}");
+                client.Connect(clientToken);
             });
 
         // LDtkFile = LDtkFile.FromFile(
@@ -171,12 +177,25 @@ public class Game1 : Core
     private void MessageReceivedHandler(byte[] payload, int payloadSize)
     {
         Console.WriteLine($"Received message with size: {payloadSize}");
-        Console.WriteLine($"Message: {payload}");
+
+        NetworkedPlayer player = MessagePackSerializer.Deserialize<NetworkedPlayer>(payload);
+        Console.WriteLine(player.ToString());
+        Console.WriteLine(
+            $"Received Packet from server: {MessagePackSerializer.ConvertToJson(payload)}"
+        );
     }
 
     private void ClientStateChanged(ClientState state)
     {
-        Console.WriteLine($"Client state changed to: {state}");
+        clientState = state;
+        Console.WriteLine($"Client state changed to: {clientState}");
+        if (clientState == ClientState.Connected)
+        {
+            var p = new NetworkedPlayer(1, Vector2.Zero);
+            var bytes = MessagePackSerializer.Serialize(p);
+            Console.WriteLine($"Sending packet: {MessagePackSerializer.ConvertToJson(bytes)}");
+            client.Send(bytes, bytes.Length);
+        }
     }
 
     // LoadContent is executed during the base.Initialize() method call within the Initialize method. It is important to know this because anything being initialized that is dependent on content loaded should be done after the base.Initialize() call and not before.
