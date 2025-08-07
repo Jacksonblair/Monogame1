@@ -178,11 +178,35 @@ public class Game1 : Core
     {
         Console.WriteLine($"Received message with size: {payloadSize}");
 
-        NetworkedPlayer player = MessagePackSerializer.Deserialize<NetworkedPlayer>(payload);
-        Console.WriteLine(player.ToString());
-        Console.WriteLine(
-            $"Received Packet from server: {MessagePackSerializer.ConvertToJson(payload)}"
-        );
+        // NetworkedPlayer player = MessagePackSerializer.Deserialize<NetworkedPlayer>(payload);
+        // Console.WriteLine(player.ToString());
+        // Console.WriteLine(
+        //     $"Received Packet from server: {MessagePackSerializer.ConvertToJson(payload)}"
+        // );
+
+        // Step 1: Deserialize only the packet type using a slice of the object
+        // PacketBase packetBase = MessagePackSerializer.Deserialize<PacketBase>(payload);
+
+        // switch (packetBase.PacketType)
+        // {
+        //     case PacketType.AddPlayerPacket:
+        //         var addPlayerPacket = MessagePackSerializer.Deserialize<AddPlayerPacket>(payload);
+        //         Console.WriteLine($"AddPlayerPacket received: {addPlayerPacket.Player}");
+        //         break;
+
+        //     case PacketType.RemovePlayerPacket:
+        //         var removePlayerPacket = MessagePackSerializer.Deserialize<RemovePlayerPacket>(
+        //             payload
+        //         );
+        //         Console.WriteLine($"RemovePlayerPacket received: {removePlayerPacket.playerId}");
+        //         break;
+
+        //     default:
+        //         Console.WriteLine("Unknown packet type received.");
+        //         break;
+        // }
+
+        Console.WriteLine($"Raw JSON: {MessagePackSerializer.ConvertToJson(payload)}");
     }
 
     private void ClientStateChanged(ClientState state)

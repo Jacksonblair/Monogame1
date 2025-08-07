@@ -1,18 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
+using DungeonSlime.Server.player;
 using DungeonSlime.Shared;
 using DungeonSlime.Shared.Network;
-using MessagePack;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
+using NetCode;
 using NetcodeIO.NET;
+using NVorbis.Contracts;
 
 namespace DungeonSlime.Server;
 
 public class GameServer : Core
 {
-    List<PlayerEntity> players = new List<PlayerEntity>();
+    Dictionary<ulong, Player> players = new();
     private int logMessageHandler;
     NetcodeIO.NET.Server server;
 
@@ -52,21 +53,30 @@ public class GameServer : Core
 
     private void messageReceivedHandler(RemoteClient sender, byte[] payload, int payloadSize)
     {
-        NetworkedPlayer player = MessagePackSerializer.Deserialize<NetworkedPlayer>(payload);
-        Console.WriteLine(player.ToString());
-        Console.WriteLine($"Received Packet: {MessagePackSerializer.ConvertToJson(payload)}");
+        var bitReader = new BitReader(payload);
+        var packetType = bitReader.ReadUInt();
 
-        sender.SendPayload(payload, payloadSize);
+        Console.WriteLine($"Received packet of type: {(PacketType)packetType}");
+
+        // NetworkedPlayer player = MessagePackSerializer.Deserialize<NetworkedPlayer>(payload);
+        // Console.WriteLine(player.ToString());
+        // Console.WriteLine($"Received Packet: {MessagePackSerializer.ConvertToJson(payload)}");
+        // sender.SendPayload(payload, payloadSize);
     }
 
     private void clientDisconnectedHandler(RemoteClient client)
     {
-        Console.WriteLine(client.ToString());
+        players.Remove(client.ClientID);
+        Console.WriteLine($"Client disconnected: {client.ClientID}");
+        BroadcastPacket(new RemovePlayerPacket(client.ClientID));
     }
 
     private void clientConnectedHandler(RemoteClient client)
     {
-        Console.WriteLine(client.ToString());
+        var netPlayer = new Player(client, Vector2.Zero);
+        players.Add(client.ClientID, netPlayer);
+        Console.WriteLine($"Client connected: {client.ClientID}");
+        BroadcastPacket(new AddPlayerPacket(netPlayer.ToNetworkedPlayer()));
     }
 
     protected override void LoadContent()
@@ -86,5 +96,18 @@ public class GameServer : Core
         // GraphicsDevice.Clear(Color.CornflowerBlue);
         // TODO: Add your drawing code here
         base.Draw(gameTime);
+    }
+
+    void BroadcastPacket(Shared.Network.ISerializable packet)
+    {
+        var writer = new BitWriter();
+        packet.Serialize(writer);
+        writer.Flush();
+        byte[] data = writer.Array;
+
+        foreach (var player in players.Values)
+        {
+            player.Client.SendPayload(data, data.Length);
+        }
     }
 }

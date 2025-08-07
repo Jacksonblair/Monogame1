@@ -14,13 +14,19 @@ dotnet dotnet tool install --global LDtkMonogame.Codegen --version 1.8.0
     [x] Server must accept connection
     [x] Send message from client to server
     [x] Send message from server to client
+    [ ] Manually seriualize 'AddPlayerPacket'
+    [ ] Manually serialize 'RemovePlayerPacket'
+    [ ] Serialize ^ when sent from server to client.
+
     [ ] Log in to Server
         [ ] Get snapshot of players
         [ ] Spawn player
         [ ] Tell everyone player was spawned
 
+## GOAL. Get something deployable and playable as fast as possible.
 
     [ ] Keep track of PlayerEntities
     [ ] Send server state snapshot
     [ ] Send player join/leave updates
 [ ] Create two clients, control each and replicate each to one another
+
