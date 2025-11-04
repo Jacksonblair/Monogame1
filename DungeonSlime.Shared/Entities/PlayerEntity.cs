@@ -1,7 +1,4 @@
 using System;
-using System.ComponentModel.DataAnnotations;
-using System.Data.Common;
-using LDtk.Renderer;
 using LDtkTypes;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
@@ -10,7 +7,6 @@ using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
 using MonoGame.Extended.Animations;
 using MonoGame.Extended.Collisions;
-using MonoGame.Extended.Collisions.Layers;
 using MonoGame.Extended.Graphics;
 
 namespace DungeonSlime.Shared;
@@ -21,31 +17,39 @@ enum PlayerAnimationState
     Run
 }
 
+/** Local representation of current player **/
 public class PlayerEntity : ICollisionActor
 {
-    private Player _data;
+    public ulong PlayerId;
+
     private SpriteSheet _idleSpritesheet;
     private SpriteSheet _runSpritesheet;
     private RendererOne _renderer;
-    private Vector2 _velocity;
+    public Vector2 Velocity;
     private AnimationController _idleAnimationController;
     private AnimationController _runAnimationController;
 
     private Vector2 _direction = Vector2.Zero;
     private Vector2 _lastDirection = Vector2.Zero;
     private bool _flip = false;
-    private float _speed = 100;
+    private float _speed = 10;
 
     public Vector2 Position
     {
         get { return Bounds.Position; }
-        // get { return _data.Position; }
     }
 
     public IShapeF Bounds { get; set; }
 
-    public PlayerEntity(Player data, RendererOne renderer, ContentManager contentMgr)
+    public PlayerEntity(
+        ulong PlayerId,
+        Vector2 Position,
+        RendererOne renderer,
+        ContentManager contentMgr
+    )
     {
+        this.PlayerId = PlayerId;
+
         var idleTexture = contentMgr.Load<Texture2D>("images/noBKG_KnightIdle_strip");
         Texture2DAtlas atlas = Texture2DAtlas.Create("Atlas/Idle", idleTexture, 64, 64);
         _idleSpritesheet = new SpriteSheet("Idle", atlas);
@@ -98,11 +102,8 @@ public class PlayerEntity : ICollisionActor
         );
         _runAnimationController = new AnimationController(_runSpritesheet.GetAnimation("Run"));
 
-        // TODO: Use animated sprite once ive got everything on one sheet.
-        _data = data;
-
         // TODO: Tweak colission size getter thing?
-        Bounds = new RectangleF(_data.Position, new SizeF(32, 32));
+        Bounds = new RectangleF(Position, new SizeF(32, 32));
 
         _renderer = renderer;
     }
@@ -115,13 +116,13 @@ public class PlayerEntity : ICollisionActor
         if (_direction != Vector2.Zero)
         {
             _flip = _direction.X > 0;
-            _velocity = _direction.NormalizedCopy() * _speed;
+            Velocity = _direction.NormalizedCopy() * _speed;
             // _velocity = _direction.Normalize() * _speed;
             // Move(_direction, gameTime);
         }
         else
         {
-            _velocity = Vector2.Zero;
+            Velocity = Vector2.Zero;
         }
 
         MoveWithVelocity(gameTime);
@@ -139,7 +140,7 @@ public class PlayerEntity : ICollisionActor
     private void MoveWithVelocity(GameTime gameTime)
     {
         float deltaSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
-        Bounds.Position += _velocity * deltaSeconds;
+        Bounds.Position += Velocity * deltaSeconds;
         // Position = actualPosition;
     }
 
@@ -157,7 +158,7 @@ public class PlayerEntity : ICollisionActor
                 Bounds.Position,
                 Color.White,
                 0.0f,
-                _data.Pivot * new Vector2(currentTexture.Size.Width, currentTexture.Size.Height),
+                Vector2.Zero, // Oirgin
                 Vector2.One,
                 _flip ? SpriteEffects.None : SpriteEffects.FlipHorizontally,
                 // SpriteEffects.None,
@@ -179,7 +180,8 @@ public class PlayerEntity : ICollisionActor
                 Bounds.Position,
                 Color.White,
                 0.0f,
-                _data.Pivot * new Vector2(currentTexture.Size.Width, currentTexture.Size.Height),
+                Vector2.Zero, // Oirgin
+                // _data.Pivot * new Vector2(currentTexture.Size.Width, currentTexture.Size.Height),
                 Vector2.One,
                 _flip ? SpriteEffects.None : SpriteEffects.FlipHorizontally,
                 // SpriteEffects.None,
@@ -229,9 +231,9 @@ public class PlayerEntity : ICollisionActor
     public void OnCollision(CollisionEventArgs collisionInfo)
     {
         Console.WriteLine("COLLIDED");
-        _velocity.X *= -1;
-        _velocity.Y *= -1;
-        Bounds.Position -= collisionInfo.PenetrationVector;
+        // _velocity.X *= -1;
+        // _velocity.Y *= -1;
+        // Bounds.Position -= collisionInfo.PenetrationVector;
         // _data.Position -= collisionInfo.PenetrationVector;
     }
 }

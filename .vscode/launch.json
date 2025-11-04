@@ -16,7 +16,18 @@
             }
         },
         {
-            "name": "DungeonSlime Client",
+            "name": "DungeonSlime Client 1",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "dotnet: build",
+            "program": "${workspaceFolder}/DungeonSlime.Client/bin/Debug/net8.0/DungeonSlime.Client.dll",
+            "args": [],
+            "env": {
+                "ENVIRONMENT": "Development"
+            }
+        },
+        {
+            "name": "DungeonSlime Client 2",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "dotnet: build",
@@ -40,11 +51,20 @@
     ],
     "compounds": [
         {
-            "name": "DungeonSlime TokenAPI/Server/Client",
+            "name": "DungeonSlime TokenAPI > Server > Single Client",
             "configurations": [
                 "DungeonSlime Token API",
                 "DungeonSlime Server",
-                "DungeonSlime Client"
+                "DungeonSlime Client 1"
+            ]
+        },
+        {
+            "name": "DungeonSlime TokenAPI > Server > Two Clients",
+            "configurations": [
+                "DungeonSlime Token API",
+                "DungeonSlime Server",
+                "DungeonSlime Client 1",
+                "DungeonSlime Client 2"
             ]
         }
     ]

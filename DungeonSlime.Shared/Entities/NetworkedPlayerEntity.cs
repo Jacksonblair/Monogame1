@@ -9,13 +9,16 @@ using MonoGame.Extended.Animations;
 using MonoGame.Extended.Collisions;
 using MonoGame.Extended.Graphics;
 
-class NetworkedPlayerEntity : ICollisionActor
+/** Local representation of networked player **/
+public class NetworkedPlayerEntity : ICollisionActor
 {
-    private Player _data;
+    public ulong PlayerId;
+
     private SpriteSheet _idleSpritesheet;
     private SpriteSheet _runSpritesheet;
-    private RendererOne _renderer;
-    private Vector2 _velocity;
+
+    // private RendererOne _renderer;
+    // private Vector2 _velocity;
     private AnimationController _idleAnimationController;
     private AnimationController _runAnimationController;
 
@@ -27,13 +30,19 @@ class NetworkedPlayerEntity : ICollisionActor
     public Vector2 Position
     {
         get { return Bounds.Position; }
-        // get { return _data.Position; }
     }
 
     public IShapeF Bounds { get; set; }
 
-    public NetworkedPlayerEntity(Player data, RendererOne renderer, ContentManager contentMgr)
+    public NetworkedPlayerEntity(
+        ulong PlayerId,
+        Vector2 Position,
+        RendererOne renderer,
+        ContentManager contentMgr
+    )
     {
+        this.PlayerId = PlayerId;
+
         var idleTexture = contentMgr.Load<Texture2D>("images/noBKG_KnightIdle_strip");
         Texture2DAtlas atlas = Texture2DAtlas.Create("Atlas/Idle", idleTexture, 64, 64);
         _idleSpritesheet = new SpriteSheet("Idle", atlas);
@@ -86,49 +95,36 @@ class NetworkedPlayerEntity : ICollisionActor
         );
         _runAnimationController = new AnimationController(_runSpritesheet.GetAnimation("Run"));
 
-        // TODO: Use animated sprite once ive got everything on one sheet.
-        _data = data;
-
         // TODO: Tweak colission size getter thing?
-        Bounds = new RectangleF(_data.Position, new SizeF(32, 32));
-
-        _renderer = renderer;
+        Bounds = new RectangleF(Position, new SizeF(32, 32));
+        // _renderer = renderer;
     }
 
     public void Update(GameTime gameTime)
     {
-        _lastDirection = _direction;
-        _direction = GetMovementDirection();
+        // _lastDirection = _direction;
 
-        if (_direction != Vector2.Zero)
-        {
-            _flip = _direction.X > 0;
-            _velocity = _direction.NormalizedCopy() * _speed;
-            // _velocity = _direction.Normalize() * _speed;
-            // Move(_direction, gameTime);
-        }
-        else
-        {
-            _velocity = Vector2.Zero;
-        }
+        // if (_direction != Vector2.Zero)
+        // {
+        //     _flip = _direction.X > 0;
+        //     _velocity = _direction.NormalizedCopy() * _speed;
+        //     // _velocity = _direction.Normalize() * _speed;
+        //     // Move(_direction, gameTime);
+        // }
+        // else
+        // {
+        //     _velocity = Vector2.Zero;
+        // }
 
-        MoveWithVelocity(gameTime);
-
-        if (_direction == Vector2.Zero)
-        {
-            _idleAnimationController.Update(gameTime);
-        }
-        else
-        {
-            _runAnimationController.Update(gameTime);
-        }
-    }
-
-    private void MoveWithVelocity(GameTime gameTime)
-    {
-        float deltaSeconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
-        Bounds.Position += _velocity * deltaSeconds;
-        // Position = actualPosition;
+        // MoveWithVelocity(gameTime);
+        // if (_direction == Vector2.Zero)
+        // {
+        //     _idleAnimationController.Update(gameTime);
+        // }
+        // else
+        // {
+        //     _runAnimationController.Update(gameTime);
+        // }
     }
 
     public void Draw(SpriteBatch spriteBatch, GameTime gameTime)
@@ -145,19 +141,13 @@ class NetworkedPlayerEntity : ICollisionActor
                 Bounds.Position,
                 Color.White,
                 0.0f,
-                _data.Pivot * new Vector2(currentTexture.Size.Width, currentTexture.Size.Height),
+                Vector2.Zero,
+                // _data.Pivot * new Vector2(currentTexture.Size.Width, currentTexture.Size.Height),
                 Vector2.One,
                 _flip ? SpriteEffects.None : SpriteEffects.FlipHorizontally,
                 // SpriteEffects.None,
                 0.0f
             );
-
-            // WHat am i trying to do?
-            // Make sure the sprite is drawn direclty on top of the position
-
-            // spriteBatch.Draw(currentTexture, _idleSpritesheet.)
-            // _renderer.RenderEntity(_data, currentTexture);
-            // Console.WriteLine(_idleAnimationController.CurrentFrame);
         }
         else
         {
@@ -167,16 +157,13 @@ class NetworkedPlayerEntity : ICollisionActor
                 Bounds.Position,
                 Color.White,
                 0.0f,
-                _data.Pivot * new Vector2(currentTexture.Size.Width, currentTexture.Size.Height),
+                Vector2.Zero,
+                // _data.Pivot * new Vector2(currentTexture.Size.Width, currentTexture.Size.Height),
                 Vector2.One,
                 _flip ? SpriteEffects.None : SpriteEffects.FlipHorizontally,
                 // SpriteEffects.None,
                 0.0f
             );
-
-            // Console.WriteLine(_runAnimationController.CurrentFrame);
-            // _data.Tile = new Rectangle(0, 0, currentTexture.Width, currentTexture.Height);
-            // _renderer.RenderEntity(_data, currentTexture.Texture);
         }
 
         // Draw origin dot
@@ -184,42 +171,12 @@ class NetworkedPlayerEntity : ICollisionActor
         spriteBatch.DrawRectangle((RectangleF)Bounds, Color.Blue, 1);
     }
 
-    private Vector2 GetMovementDirection()
-    {
-        var movementDirection = Vector2.Zero;
-        var state = Keyboard.GetState();
-        if (state.IsKeyDown(Keys.Down))
-        {
-            movementDirection += Vector2.UnitY;
-        }
-        if (state.IsKeyDown(Keys.Up))
-        {
-            movementDirection -= Vector2.UnitY;
-        }
-        if (state.IsKeyDown(Keys.Left))
-        {
-            movementDirection -= Vector2.UnitX;
-        }
-        if (state.IsKeyDown(Keys.Right))
-        {
-            movementDirection += Vector2.UnitX;
-        }
-        return movementDirection;
-    }
-
-    // public void Move(Vector2 direction, GameTime gameTime)
-    // {
-    //     float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
-    //     _data.Position += direction * _speed * deltaTime;
-    //     // Console.WriteLine(_data.Position.ToString());
-    // }
-
     public void OnCollision(CollisionEventArgs collisionInfo)
     {
-        Console.WriteLine("COLLIDED");
-        _velocity.X *= -1;
-        _velocity.Y *= -1;
-        Bounds.Position -= collisionInfo.PenetrationVector;
+        // Console.WriteLine("COLLIDED");
+        // _velocity.X *= -1;
+        // _velocity.Y *= -1;
+        // Bounds.Position -= collisionInfo.PenetrationVector;
         // _data.Position -= collisionInfo.PenetrationVector;
     }
 }

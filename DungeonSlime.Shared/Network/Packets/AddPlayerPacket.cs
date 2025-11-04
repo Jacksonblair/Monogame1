@@ -1,10 +1,14 @@
+using System;
 using Microsoft.Xna.Framework;
 using NetCode;
 
 namespace DungeonSlime.Shared.Network;
 
+/** Server representation of player **/
 public class AddPlayerPacket : ISerializable
 {
+    public PacketType Type => PacketType.AddPlayerPacket;
+
     public ulong PlayerId;
     public Vector2 Position;
 
@@ -24,6 +28,7 @@ public class AddPlayerPacket : ISerializable
 
     public void Serialize(BitWriter bitWriter)
     {
+        Console.WriteLine($"Serializing: {PlayerId} {Position.X} {Position.Y}");
         bitWriter.Write(PlayerId);
         bitWriter.Write(Position.X);
         bitWriter.Write(Position.Y);

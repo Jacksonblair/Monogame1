@@ -23,13 +23,8 @@ namespace DungeonSlime
                 .Default.ParseArguments<ClientStartOptions>(args)
                 .WithParsed(opts =>
                 {
-                    // Console.WriteLine(
-                    //     $"Mode: {opts.Mode}, Host: {opts.Host}, Port: {opts.Port}, Debug: {opts.Debug}"
-                    // );
-
                     using var game = new Game1(opts);
                     game.Run();
-                    // Start server or client based on opts.Mode
                 })
                 .WithNotParsed(errs =>
                 {

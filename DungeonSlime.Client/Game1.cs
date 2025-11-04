@@ -2,22 +2,12 @@
 using System.Collections.Generic;
 using DungeonSlime.Shared;
 using DungeonSlime.Shared.Network;
-using LDtk;
-// Optional
-using LDtk.Renderer;
-using LDtkTypes;
-using MessagePack;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
-using MonoGame.Extended.Collisions;
-using MonoGame.Extended.Collisions.Layers;
-using MonoGame.Extended.Collisions.QuadTree;
 using MonoGame.Extended.ViewportAdapters;
-using MonoGameLibrary;
-using MonoGameLibrary.Graphics;
-using MonoGameLibrary.Input;
+using NetCode;
 using NetcodeIO.NET;
 
 namespace DungeonSlime;
@@ -30,14 +20,11 @@ public class Game1 : Core
     ClientStartOptions startOpts;
     ConnectTokenGetter connectTokenGetter;
 
+    // Texture stuff?
+    // TextureAtlas textureAtlas;
+
     // Speed multiplier when moving.
     // private const float MOVEMENT_SPEED = 5.0f;
-
-    // Tracks the position of the bat.
-    // private Vector2 _batPosition;
-
-    // Tracks the velocity of the bat.
-    // private Vector2 _batVelocity;
 
     // Defines the tilemap to draw.
     // private Tilemap _tilemap;
@@ -50,14 +37,18 @@ public class Game1 : Core
 
     // LDtkFile LDtkFile;
     // LDtkWorld World;
-    // RendererOne Renderer;
-    // List<Door> doors = new List<Door>();
-    // PlayerEntity player;
+    RendererOne Renderer;
 
     // Extended camera
     OrthographicCamera _camera;
 
     // List<CubeEntity> _cubeEntities = new List<CubeEntity>();
+
+    // Local player
+    PlayerEntity player;
+
+    // Networked players
+    List<NetworkedPlayerEntity> _players = [];
 
     // 1. Core systems in constructor
     public Game1(ClientStartOptions startOpts)
@@ -72,7 +63,9 @@ public class Game1 : Core
         // TODO: Add your initialization logic here
         base.Initialize(); // Should never be removed,  as this is where the graphics device is initialized for the target platform.
 
-        // Join server
+        Window.Title = "Client";
+
+        // Network client
         client = new Client();
 
         // Called when the client's state has changed
@@ -88,16 +81,22 @@ public class Game1 : Core
             .GetConnectTokenAsync()
             .ContinueWith(t =>
             {
-                this.clientToken = t.Result;
+                clientToken = t.Result;
                 Console.WriteLine($"Got connect token: {clientToken}");
+                // Join server
                 client.Connect(clientToken);
             });
+
+        // Setup renderer...
+        Renderer = new RendererOne(SpriteBatch);
+
+        // Set up player entity
+        player = new(0, Vector2.Zero, Renderer, Content);
 
         // LDtkFile = LDtkFile.FromFile(
         //     "C:/Users/Jackson/AppData/Local/Programs/ldtk/extraFiles/samples/Typical_TopDown_example_edited.ldtk"
         // );
         // World = LDtkFile.LoadWorld(Worlds.World.Iid);
-        // Renderer = new RendererOne(SpriteBatch);
 
         // var worldBounds = LdtkWorldBoundsHelper.GetWorldBounds(World);
 
@@ -144,82 +143,68 @@ public class Game1 : Core
 
         var viewportAdapter = new BoxingViewportAdapter(Window, GraphicsDevice, 800, 480);
         _camera = new OrthographicCamera(viewportAdapter);
-
-        // var playerData = World.GetEntity<Player>();
-        // this.player = new PlayerEntity(playerData, Renderer, Content);
-
-        // _collisionComponent.Insert(player);
-
-        // Rectangle screenBounds = GraphicsDevice.PresentationParameters.Bounds;
-
-        // _roomBounds = new Rectangle(
-        //     (int)_tilemap.TileWidth,
-        //     (int)_tilemap.TileHeight,
-        //     screenBounds.Width - (int)_tilemap.TileWidth * 2,
-        //     screenBounds.Height - (int)_tilemap.TileHeight * 2
-        // );
-
-        // // Initial slime position will be the center tile of the tile map.
-        // int centerRow = _tilemap.Rows / 2;
-        // int centerColumn = _tilemap.Columns / 2;
-        // _slimePosition = new Vector2(
-        //     centerColumn * _tilemap.TileWidth,
-        //     centerRow * _tilemap.TileHeight
-        // );
-
-        // Initial bat position will be in the top left corner of the room
-        // _batPosition = new Vector2(_roomBounds.Left, _roomBounds.Top);
-
-        // Assign the initial random velocity to the bat.
-        // AssignRandomBatVelocity();
     }
 
     private void MessageReceivedHandler(byte[] payload, int payloadSize)
     {
         Console.WriteLine($"Received message with size: {payloadSize}");
 
-        // NetworkedPlayer player = MessagePackSerializer.Deserialize<NetworkedPlayer>(payload);
-        // Console.WriteLine(player.ToString());
-        // Console.WriteLine(
-        //     $"Received Packet from server: {MessagePackSerializer.ConvertToJson(payload)}"
-        // );
+        BitReader bitReader = new BitReader(payload);
+        PacketType type = PacketReader.ReadPacketType(bitReader);
 
-        // Step 1: Deserialize only the packet type using a slice of the object
-        // PacketBase packetBase = MessagePackSerializer.Deserialize<PacketBase>(payload);
+        switch (type)
+        {
+            case PacketType.AddPlayerPacket:
+                var ap_packet = new AddPlayerPacket();
+                ap_packet.Deserialize(bitReader);
+                Console.WriteLine(
+                    $"GOT ADD PLAYER PACKET: {ap_packet.PlayerId} {ap_packet.Position.X} {ap_packet.Position.Y}"
+                );
 
-        // switch (packetBase.PacketType)
-        // {
-        //     case PacketType.AddPlayerPacket:
-        //         var addPlayerPacket = MessagePackSerializer.Deserialize<AddPlayerPacket>(payload);
-        //         Console.WriteLine($"AddPlayerPacket received: {addPlayerPacket.Player}");
-        //         break;
-
-        //     case PacketType.RemovePlayerPacket:
-        //         var removePlayerPacket = MessagePackSerializer.Deserialize<RemovePlayerPacket>(
-        //             payload
-        //         );
-        //         Console.WriteLine($"RemovePlayerPacket received: {removePlayerPacket.playerId}");
-        //         break;
-
-        //     default:
-        //         Console.WriteLine("Unknown packet type received.");
-        //         break;
-        // }
-
-        Console.WriteLine($"Raw JSON: {MessagePackSerializer.ConvertToJson(payload)}");
+                var newPlayer = new NetworkedPlayerEntity(
+                    ap_packet.PlayerId,
+                    ap_packet.Position,
+                    Renderer,
+                    Content
+                );
+                _players.Add(newPlayer);
+                break;
+            case PacketType.RemovePlayerPacket:
+                var rp_packet = new RemovePlayerPacket();
+                rp_packet.Deserialize(bitReader);
+                Console.WriteLine($"GOT REMOVE PLAYER PACKET: {rp_packet.PlayerId}");
+                _players.RemoveAll(player => player.PlayerId == rp_packet.PlayerId);
+                break;
+            case PacketType.UpdatePlayerPositionPacket:
+                var upp_packet = new UpdatePlayerPositionPacket();
+                upp_packet.Deserialize(bitReader);
+                Console.WriteLine($"GOT UPDATE PLAYER POSITION PACKET: {upp_packet.PlayerId}");
+                var playerToUpdate = _players.Find(p => p.PlayerId == upp_packet.PlayerId);
+                if (playerToUpdate != null)
+                {
+                    Console.WriteLine("FOUND PLAYER TO UPDATE");
+                    var updatedPosition = new Vector2(upp_packet.Position.X, upp_packet.Position.Y);
+                    playerToUpdate.Bounds.Position = updatedPosition;
+                }
+                break;
+            default:
+                Console.WriteLine("DIDNT RECOGNISE PACKET TYPE");
+                break;
+        }
     }
 
     private void ClientStateChanged(ClientState state)
     {
         clientState = state;
         Console.WriteLine($"Client state changed to: {clientState}");
-        if (clientState == ClientState.Connected)
-        {
-            var p = new NetworkedPlayer(1, Vector2.Zero);
-            var bytes = MessagePackSerializer.Serialize(p);
-            Console.WriteLine($"Sending packet: {MessagePackSerializer.ConvertToJson(bytes)}");
-            client.Send(bytes, bytes.Length);
-        }
+        // if (clientState == ClientState.Connected)
+        // {
+        // var p = new NetworkedPlayer(1, Vector2.Zero);
+        // var bytes = MessagePackSerializer.Serialize(p);
+        // Console.WriteLine($"Sending packet: {MessagePackSerializer.ConvertToJson(bytes)}");
+        // var bytes = new byte[2];
+        // client.Send(bytes, 2);
+        // }
     }
 
     // LoadContent is executed during the base.Initialize() method call within the Initialize method. It is important to know this because anything being initialized that is dependent on content loaded should be done after the base.Initialize() call and not before.
@@ -227,19 +212,6 @@ public class Game1 : Core
     protected override void LoadContent()
     {
         // Create the texture atlas from the XML configuration file
-        // TextureAtlas atlas = TextureAtlas.FromFile(Content, "images/atlas-definition.xml");
-
-        // Create the slime animated sprite from the atlas.
-        // _slime = atlas.CreateAnimatedSprite("slime-animation");
-        // _slime.Scale = new Vector2(4.0f, 4.0f);
-
-        // Create the bat animated sprite from the atlas.
-        // _bat = atlas.CreateAnimatedSprite("bat-animation");
-        // _bat.Scale = new Vector2(4.0f, 4.0f);
-
-        // Create the tilemap from the XML configuration file.
-        // _tilemap = Tilemap.FromFile(Content, "images/tilemap-definition.xml");
-        // _tilemap.Scale = new Vector2(4.0f, 4.0f);
     }
 
     protected override void Update(GameTime gameTime)
@@ -250,20 +222,23 @@ public class Game1 : Core
         )
             Exit();
 
-        // Check for keyboard input and handle it.
-        // CheckKeyboardInput();
-
-        // Check for gamepad input and handle it.
-        // CheckGamePadInput();
-
-        // _camera.Position = player.Position;
-        // _camera.LookAt(player.Position);
+        _camera.Position = player.Position;
+        _camera.LookAt(player.Position);
         //  (
         //     GetCameraMovementDirection() * movementSpeed * gameTime.GetElapsedSeconds()
         // );
         // const float movementSpeed = 200;
         // AdjustCameraZoom();
         // player.Update(gameTime);
+
+        if (client.State == ClientState.Connected)
+        {
+            // TODO: Move into player? OR somewhere else. idk.
+            SendPacketToServer(new PlayerMovementInputPacket(player.Velocity));
+        }
+
+        player.Update(gameTime);
+        _players.ForEach(p => p.Update(gameTime));
 
         // _collisionComponent.Update(gameTime);
         base.Update(gameTime);
@@ -313,128 +288,9 @@ public class Game1 : Core
         return _camera.ScreenToWorld(new Vector2(mouseState.X, mouseState.Y));
     }
 
-    private void AssignRandomBatVelocity()
-    {
-        // Generate a random angle
-        // float angle = (float)(Random.Shared.NextDouble() * Math.PI * 2);
-
-        // Convert angle to a direction vector
-        // float x = (float)Math.Cos(angle);
-        // float y = (float)Math.Sin(angle);
-        // Vector2 direction = new Vector2(x, y);
-
-        // Multiply the direction vector by the movement speed
-        // _batVelocity = direction * MOVEMENT_SPEED;
-    }
-
-    private void CheckKeyboardInput()
-    {
-        // If the space key is held down, the movement speed increases by 1.5
-        // float speed = MOVEMENT_SPEED;
-        // if (Input.Keyboard.IsKeyDown(Keys.Space))
-        // {
-        //     speed *= 1.5f;
-        // }
-
-        // // If the W or Up keys are down, move the slime up on the screen.
-        // if (Input.Keyboard.IsKeyDown(Keys.W) || Input.Keyboard.IsKeyDown(Keys.Up))
-        // {
-        //     _slimePosition.Y -= speed;
-        // }
-
-        // // if the S or Down keys are down, move the slime down on the screen.
-        // if (Input.Keyboard.IsKeyDown(Keys.S) || Input.Keyboard.IsKeyDown(Keys.Down))
-        // {
-        //     _slimePosition.Y += speed;
-        // }
-
-        // // If the A or Left keys are down, move the slime left on the screen.
-        // if (Input.Keyboard.IsKeyDown(Keys.A) || Input.Keyboard.IsKeyDown(Keys.Left))
-        // {
-        //     _slimePosition.X -= speed;
-        // }
-
-        // // If the D or Right keys are down, move the slime right on the screen.
-        // if (Input.Keyboard.IsKeyDown(Keys.D) || Input.Keyboard.IsKeyDown(Keys.Right))
-        // {
-        //     _slimePosition.X += speed;
-        // }
-    }
-
-    private void CheckGamePadInput()
-    {
-        // GamePadInfo gamePadOne = Input.GamePads[(int)PlayerIndex.One];
-
-        // // If the A button is held down, the movement speed increases by 1.5
-        // // and the gamepad vibrates as feedback to the player.
-        // float speed = MOVEMENT_SPEED;
-        // if (gamePadOne.IsButtonDown(Buttons.A))
-        // {
-        //     speed *= 1.5f;
-        //     gamePadOne.SetVibration(1.0f, TimeSpan.FromSeconds(1));
-        // }
-        // else
-        // {
-        //     gamePadOne.StopVibration();
-        // }
-
-        // // Check thumbstick first since it has priority over which gamepad input
-        // // is movement.  It has priority since the thumbstick values provide a
-        // // more granular analog value that can be used for movement.
-        // if (gamePadOne.LeftThumbStick != Vector2.Zero)
-        // {
-        //     _slimePosition.X += gamePadOne.LeftThumbStick.X * speed;
-        //     _slimePosition.Y -= gamePadOne.LeftThumbStick.Y * speed;
-        // }
-        // else
-        // {
-        //     // If DPadUp is down, move the slime up on the screen.
-        //     if (gamePadOne.IsButtonDown(Buttons.DPadUp))
-        //     {
-        //         _slimePosition.Y -= speed;
-        //     }
-
-        //     // If DPadDown is down, move the slime down on the screen.
-        //     if (gamePadOne.IsButtonDown(Buttons.DPadDown))
-        //     {
-        //         _slimePosition.Y += speed;
-        //     }
-
-        //     // If DPapLeft is down, move the slime left on the screen.
-        //     if (gamePadOne.IsButtonDown(Buttons.DPadLeft))
-        //     {
-        //         _slimePosition.X -= speed;
-        //     }
-
-        //     // If DPadRight is down, move the slime right on the screen.
-        //     if (gamePadOne.IsButtonDown(Buttons.DPadRight))
-        //     {
-        //         _slimePosition.X += speed;
-        //     }
-        // }
-    }
-
     protected override void Draw(GameTime gameTime)
     {
         GraphicsDevice.Clear(Color.CornflowerBlue);
-
-        // // Begin the sprite batch to prepare for rendering.
-        // SpriteBatch.Begin(samplerState: SamplerState.PointClamp);
-
-        // // Draw the tilemap.
-        // // _tilemap.Draw(SpriteBatch);
-
-        // // Draw the slime sprite.
-        // // _slime.Draw(SpriteBatch, _slimePosition);
-
-        // // Draw the bat sprite 10px to the right of the slime.
-        // // _bat.Draw(SpriteBatch, _batPosition);
-
-        // // Always end the sprite batch when finished.
-        // SpriteBatch.End();
-
-        // GraphicsDevice.Clear(World.BgColor);
-
         var transformMatrix = _camera.GetViewMatrix();
         SpriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: transformMatrix);
 
@@ -449,11 +305,25 @@ public class Game1 : Core
         //     }
         // }
 
-        // // player.Draw(SpriteBatch, gameTime);
+        // this.player.Draw(SpriteBatch, gameTime);
         // _cubeEntities.ForEach(ce => ce.Draw(SpriteBatch));
+
+        // Draw player, and all networked players.
+        player.Draw(SpriteBatch, gameTime);
+        _players.ForEach(p =>
+        {
+            p.Draw(SpriteBatch, gameTime);
+        });
 
         SpriteBatch.End();
 
         base.Draw(gameTime);
+    }
+
+    void SendPacketToServer(ISerializable packet)
+    {
+        var writer = new BitWriter();
+        PacketWriter.WritePacket(writer, packet);
+        client.Send(writer.Array, writer.BytesCount);
     }
 }
