@@ -1,6 +1,13 @@
 using System;
 using System.Net.Http;
+using System.Text.Json;
 using System.Threading.Tasks;
+
+public class GetConnectTokenResult
+{
+    public ulong ClientId { get; set; }
+    public byte[] Token { get; set; }
+}
 
 public class ConnectTokenGetter
 {
@@ -13,16 +20,24 @@ public class ConnectTokenGetter
         _httpClient = new HttpClient();
     }
 
-    public async Task<byte[]> GetConnectTokenAsync()
+    public async Task<GetConnectTokenResult> GetConnectTokenAsync()
     {
         HttpResponseMessage response = await _httpClient.GetAsync(_tokenEndpoint);
         response.EnsureSuccessStatusCode();
 
-        string base64Token = await response.Content.ReadAsStringAsync();
+        string json = await response.Content.ReadAsStringAsync();
 
         try
         {
-            return Convert.FromBase64String(base64Token);
+            using var doc = JsonDocument.Parse(json);
+            var root = doc.RootElement;
+
+            ulong clientId = root.GetProperty("clientId").GetUInt64();
+            string base64Token = root.GetProperty("token").GetString() ?? string.Empty;
+
+            byte[] token = Convert.FromBase64String(base64Token);
+
+            return new GetConnectTokenResult { ClientId = clientId, Token = token };
         }
         catch (FormatException ex)
         {

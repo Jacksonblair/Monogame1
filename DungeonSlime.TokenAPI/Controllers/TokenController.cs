@@ -51,6 +51,6 @@ public class TokenController : ControllerBase
             userData
         );
 
-        return Ok(Convert.ToBase64String(token));
+        return Ok(new { clientId, token = Convert.ToBase64String(token) });
     }
 }

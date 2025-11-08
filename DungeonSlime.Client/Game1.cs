@@ -17,6 +17,7 @@ public class Game1 : Core
     Client client;
     ClientState clientState = ClientState.Disconnected;
     byte[] clientToken;
+    ulong clientId;
     ClientStartOptions startOpts;
     ConnectTokenGetter connectTokenGetter;
 
@@ -81,7 +82,8 @@ public class Game1 : Core
             .GetConnectTokenAsync()
             .ContinueWith(t =>
             {
-                clientToken = t.Result;
+                clientToken = t.Result.Token;
+                clientId = t.Result.ClientId;
                 Console.WriteLine($"Got connect token: {clientToken}");
                 // Join server
                 client.Connect(clientToken);
@@ -89,9 +91,6 @@ public class Game1 : Core
 
         // Setup renderer...
         Renderer = new RendererOne(SpriteBatch);
-
-        // Set up player entity
-        player = new(0, Vector2.Zero, Renderer, Content);
 
         // LDtkFile = LDtkFile.FromFile(
         //     "C:/Users/Jackson/AppData/Local/Programs/ldtk/extraFiles/samples/Typical_TopDown_example_edited.ldtk"
@@ -178,11 +177,11 @@ public class Game1 : Core
             case PacketType.UpdatePlayerPositionPacket:
                 var upp_packet = new UpdatePlayerPositionPacket();
                 upp_packet.Deserialize(bitReader);
-                Console.WriteLine($"GOT UPDATE PLAYER POSITION PACKET: {upp_packet.PlayerId}");
+                // Console.WriteLine($"GOT UPDATE PLAYER POSITION PACKET: {upp_packet.PlayerId}");
                 var playerToUpdate = _players.Find(p => p.PlayerId == upp_packet.PlayerId);
                 if (playerToUpdate != null)
                 {
-                    Console.WriteLine("FOUND PLAYER TO UPDATE");
+                    // Console.WriteLine("FOUND PLAYER TO UPDATE");
                     var updatedPosition = new Vector2(upp_packet.Position.X, upp_packet.Position.Y);
                     playerToUpdate.Bounds.Position = updatedPosition;
                 }
@@ -197,14 +196,17 @@ public class Game1 : Core
     {
         clientState = state;
         Console.WriteLine($"Client state changed to: {clientState}");
-        // if (clientState == ClientState.Connected)
-        // {
-        // var p = new NetworkedPlayer(1, Vector2.Zero);
-        // var bytes = MessagePackSerializer.Serialize(p);
-        // Console.WriteLine($"Sending packet: {MessagePackSerializer.ConvertToJson(bytes)}");
-        // var bytes = new byte[2];
-        // client.Send(bytes, 2);
-        // }
+        if (clientState == ClientState.Connected)
+        {
+            // var p = new NetworkedPlayer(1, Vector2.Zero);
+            // var bytes = MessagePackSerializer.Serialize(p);
+            // Console.WriteLine($"Sending packet: {MessagePackSerializer.ConvertToJson(bytes)}");
+            // var bytes = new byte[2];
+            // client.Send(bytes, 2);
+
+            // Set up player entity on connect
+            player = new(0, Vector2.Zero, Renderer, Content);
+        }
     }
 
     // LoadContent is executed during the base.Initialize() method call within the Initialize method. It is important to know this because anything being initialized that is dependent on content loaded should be done after the base.Initialize() call and not before.
@@ -237,7 +239,10 @@ public class Game1 : Core
             SendPacketToServer(new PlayerMovementInputPacket(player.Velocity));
         }
 
-        player.Update(gameTime);
+        if (player != null)
+        {
+            player.Update(gameTime);
+        }
         _players.ForEach(p => p.Update(gameTime));
 
         // _collisionComponent.Update(gameTime);
@@ -309,7 +314,11 @@ public class Game1 : Core
         // _cubeEntities.ForEach(ce => ce.Draw(SpriteBatch));
 
         // Draw player, and all networked players.
-        player.Draw(SpriteBatch, gameTime);
+
+        if (player != null)
+        {
+            player.Draw(SpriteBatch, gameTime);
+        }
         _players.ForEach(p =>
         {
             p.Draw(SpriteBatch, gameTime);
